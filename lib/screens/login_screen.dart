@@ -92,7 +92,8 @@ class _LoginScreenState extends State<LoginScreen> {
                          icon: Icon(
                           Icons.book,
                          size: 40,
-                         ))
+                         )
+                      )
                     ],
                   ),
                 )

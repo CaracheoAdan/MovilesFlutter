@@ -46,9 +46,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
    ImageProvider? _avatarProvider() {
     if (_avatar == null) return null; //Si el usuario aún no eligió foto, devolvemos null para que el CircleAvatar muestre el child (tu ícono de persona).
-    return kIsWeb
-        ? NetworkImage(_avatar!.path)                    // En Web, image_picker entrega un blob URL (no un archivo). Se muestra con NetworkImage.
-        : FileImage(File(_avatar!.path)) as ImageProvider; // En Android/iOS, te da una ruta de archivo. Se muestra con FileImage(File(...)).
+    return FileImage(File(_avatar!.path)); // En Android/iOS, te da una ruta de archivo. Se muestra con FileImage(File(...)).
   }
 
   void _showSource() {
