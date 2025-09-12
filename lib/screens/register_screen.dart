@@ -1,101 +1,175 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:lottie/lottie.dart';
 
-
 class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
+
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
- TextEditingController conUser = TextEditingController();
-  TextEditingController conPwd = TextEditingController();
-  TextEditingController conNombre = TextEditingController();
-    bool isValidating = false;
+  // Controllers
+  final conUser = TextEditingController();
+  final conPwd = TextEditingController();
+  final conNombre = TextEditingController();
+
+  // Image picker y avatar deben ser campos del State
+  final ImagePicker _picker = ImagePicker();
+  XFile? _avatar;
+
+  bool isValidating = false;
+
+  @override 
+  void dispose() { //El dipose liberar recursos de el textEditingController pero mantiene los listeners, si no los liveramos puede tener figas de memoria y causar errores.
+    conUser.dispose();
+    conPwd.dispose();
+    conNombre.dispose();
+    super.dispose();
+  }
+ Future<void> _pick(ImageSource source) async {
+    final XFile? file = await _picker.pickImage(
+      source: source, //eliges si es camara o galeria
+      maxWidth: 1024,
+      imageQuality: 85,
+    );
+    if (file == null) return;
+    setState(() => _avatar = file);
+  }
+   ImageProvider? _avatarProvider() {
+    if (_avatar == null) return null; //Si el usuario aún no eligió foto, devolvemos null para que el CircleAvatar muestre el child (tu ícono de persona).
+    return kIsWeb
+        ? NetworkImage(_avatar!.path)                    // En Web, image_picker entrega un blob URL (no un archivo). Se muestra con NetworkImage.
+        : FileImage(File(_avatar!.path)) as ImageProvider; // En Android/iOS, te da una ruta de archivo. Se muestra con FileImage(File(...)).
+  }
+
+  void _showSource() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (_) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Elegir de galería'),
+              onTap: () { Navigator.pop(context); _pick(ImageSource.gallery); },
+            ),
+            if (_picker.supportsImageSource(ImageSource.camera))
+              ListTile(
+                leading: const Icon(Icons.photo_camera),
+                title: const Text('Tomar foto'),
+                onTap: () { Navigator.pop(context); _pick(ImageSource.camera); },
+              ),
+          ],
+        ),
+      ),
+    );
+  }
 
 
   @override
   Widget build(BuildContext context) {
-
-     final txtNombre=TextField(
-      keyboardType: TextInputType.text,
+    final txtNombre = TextField(
       controller: conNombre,
-      decoration: InputDecoration(
-        hintText: 'Nombre Completo'
-      ),
+      keyboardType: TextInputType.text,
+      decoration: const InputDecoration(hintText: 'Nombre completo'),
     );
-
-      final txtUser=TextField(
-      keyboardType: TextInputType.emailAddress,
+    final txtUser = TextField(
       controller: conUser,
-      decoration: InputDecoration(
-        hintText: 'Correo Electronico'
-      ),
+      keyboardType: TextInputType.emailAddress,
+      decoration: const InputDecoration(hintText: 'Correo electrónico'),
     );
-
-    final txtPwd=TextField(
-      obscureText: true,
+    final txtPwd = TextField(
       controller: conPwd,
-      decoration: InputDecoration(
-        hintText: 'Contraseña'
-      ),
+      obscureText: true,
+      decoration: const InputDecoration(hintText: 'Contraseña'),
     );
 
     return Scaffold(
+      appBar: AppBar(title: const Text('Registro')),
       body: Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
           image: DecorationImage(
+            image: AssetImage("assets/fondo1.png"),
             fit: BoxFit.cover,
-            image: AssetImage("assets/fondo1.png")
-          )
-        ),  
+          ),
+        ),
         child: Stack(
           alignment: Alignment.topCenter,
           children: [
-            Positioned(
+            const Positioned(
               top: 200,
-              child: Text('Register',style:  TextStyle(color: const Color.fromARGB(255, 229, 226, 226), fontSize: 35, fontFamily: 'Cholo'),
+              child: Text(
+                'Register',
+                style: TextStyle(
+                  color: Color(0xFFE5E2E2),
+                  fontSize: 35,
+                  fontFamily: 'Cholo',
+                ),
               ),
             ),
-            Positioned( 
+            // Avatar
+            Positioned(
+              top: 240,
+              child: GestureDetector(
+                onTap: _showSource,
+                child: CircleAvatar(
+                  radius: 56,
+                  backgroundColor: Colors.grey.shade300,
+                  backgroundImage: _avatarProvider(),
+                  child: _avatar == null
+                      ? const Icon(Icons.person, size: 48, color: Colors.white70)
+                      : null,
+                ),
+              ),
+            ),
+            // Card con formulario
+            Positioned(
               bottom: 80,
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  width:  MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height * .35,
-                  decoration: BoxDecoration(
-                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(20)
-                  ),
-                  child: ListView(
-                    children: [
-                      txtNombre,
-                      txtUser,
-                      txtPwd,
-                     TextButton(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height * .25,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: ListView(
+                  children: [
+                    txtNombre,
+                    txtUser,
+                    txtPwd,
+                    const SizedBox(height: 12),
+                    TextButton(
                       onPressed: () {
                         isValidating = true;
                         setState(() {});
-                        Future.delayed(const Duration(milliseconds: 3000)).then((value) {
-                          Navigator.pushNamed(context, '/login');                          // De esta manera navegas hacia la siguiente pantalla
-                      });
+                        Future.delayed(const Duration(milliseconds: 3000)).then((_) {
+                          // Aquí procesa tu registro; _avatar?.path contiene la ruta/URL
+                          if (!mounted) return;
+                          Navigator.pushNamed(context, '/login');
+                        });
                       },
-                        child: const Text(
-                          "Register",
-                          style: TextStyle(fontSize: 20),
-                        ),
-                      ),
-                    ],
-                  ),
-                )
+                      child: const Text("Register", style: TextStyle(fontSize: 20)),
+                    ),
+                  ],
+                ),
+              ),
             ),
-           Positioned(
+            // Loader Lottie
+            Positioned(
               top: 300,
               child: isValidating
                   ? Lottie.asset("assets/loading2.json", height: 200)
-                  : Container(),
+                  : const SizedBox.shrink(),
             ),
           ],
         ),
