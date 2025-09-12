@@ -74,18 +74,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       txtNombre,
                       txtUser,
                       txtPwd,
-                     IconButton(
+                     TextButton(
                       onPressed: () {
                         isValidating = true;
                         setState(() {});
                         Future.delayed(const Duration(milliseconds: 3000)).then((value) {
-                          Navigator.pushNamed(context, '/home');                          // De esta manera navegas hacia la siguiente pantalla
+                          Navigator.pushNamed(context, '/login');                          // De esta manera navegas hacia la siguiente pantalla
                       });
                       },
-                       icon: Icon(
-                         Icons.login,
-                         size: 40,
-                       ),
+                        child: const Text(
+                          "Register",
+                          style: TextStyle(fontSize: 20),
+                        ),
                       ),
                     ],
                   ),
