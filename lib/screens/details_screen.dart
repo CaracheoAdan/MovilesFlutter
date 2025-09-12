@@ -179,7 +179,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
   }
 }
 
-/* =================== WIDGETS PRIVADOS =================== */
 
 // 3 capas translúcidas + imagen centrada
 class _HeroDetailsImage extends StatelessWidget {

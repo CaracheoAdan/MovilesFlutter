@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:movilesejmplo1/screens/challenge_screen.dart';
 import 'package:movilesejmplo1/screens/home_screen.dart';
 import 'package:movilesejmplo1/screens/login_screen.dart';
+import 'package:movilesejmplo1/screens/register_screen.dart';
 import 'package:movilesejmplo1/utils/theme_app.dart';
 import 'package:movilesejmplo1/utils/value_listener.dart';
 
@@ -22,7 +23,8 @@ class MyApp extends StatelessWidget {
           routes: {
             "/home": (context) => HomeScreen(),
             "/challenge" : (context) => ChallengeScreen(),
-          },
+            "/register" : (context) => RegisterScreen(),
+          }, 
           title: 'Material App',
           home: LoginScreen(),
         );

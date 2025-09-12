@@ -1,16 +1,11 @@
-
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
-
+class RegisterScreen extends StatefulWidget {
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-
+class _RegisterScreenState extends State<RegisterScreen> {
  TextEditingController conUser = TextEditingController();
   TextEditingController conPwd = TextEditingController();
     bool isValidating = false;

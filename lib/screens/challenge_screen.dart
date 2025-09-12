@@ -181,7 +181,7 @@ class HeroRow extends StatelessWidget {
                             MaterialPageRoute(
                               builder: (_) => DetailsScreen(
                                 imagePath: image,
-                                heroName: name, // ✅ ahora sí enviamos el nombre
+                                heroName: name, 
                               ),
                             ),
                           );
@@ -282,3 +282,4 @@ class AttributeWidget extends StatelessWidget {
     );
   }
 }
+                  
