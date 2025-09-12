@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
+
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -8,18 +10,26 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
  TextEditingController conUser = TextEditingController();
   TextEditingController conPwd = TextEditingController();
+  TextEditingController conNombre = TextEditingController();
     bool isValidating = false;
 
 
   @override
   Widget build(BuildContext context) {
 
+     final txtNombre=TextField(
+      keyboardType: TextInputType.text,
+      controller: conNombre,
+      decoration: InputDecoration(
+        hintText: 'Nombre Completo'
+      ),
+    );
 
-    final txtUser=TextField(
+      final txtUser=TextField(
       keyboardType: TextInputType.emailAddress,
       controller: conUser,
       decoration: InputDecoration(
-        hintText: 'Correo Electronico homie'
+        hintText: 'Correo Electronico'
       ),
     );
 
@@ -46,7 +56,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           children: [
             Positioned(
               top: 200,
-              child: Text('Caracheo App',style:  TextStyle(color: const Color.fromARGB(255, 229, 226, 226), fontSize: 35, fontFamily: 'Cholo'),
+              child: Text('Register',style:  TextStyle(color: const Color.fromARGB(255, 229, 226, 226), fontSize: 35, fontFamily: 'Cholo'),
               ),
             ),
             Positioned( 
@@ -61,6 +71,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   child: ListView(
                     children: [
+                      txtNombre,
                       txtUser,
                       txtPwd,
                      IconButton(
@@ -76,18 +87,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                          size: 40,
                        ),
                       ),
-                      IconButton(
-                        onPressed: (){
-                          isValidating = true;
-                          setState(() {});
-                          Future.delayed(const Duration(milliseconds: 3000)).then((value){
-                            Navigator.pushNamed(context, '/register');
-                          });
-                        },
-                         icon: Icon(
-                          Icons.book,
-                         size: 40,
-                         ))
                     ],
                   ),
                 )
