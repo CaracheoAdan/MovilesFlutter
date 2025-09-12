@@ -13,6 +13,11 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   // Controllers
+
+  final canUseCamera = !kIsWeb &&
+    (defaultTargetPlatform == TargetPlatform.android ||
+     defaultTargetPlatform == TargetPlatform.iOS);
+     
   final conUser = TextEditingController();
   final conPwd = TextEditingController();
   final conNombre = TextEditingController();
