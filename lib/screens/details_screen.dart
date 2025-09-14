@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 class DetailsScreen extends StatefulWidget {
   const DetailsScreen({
     super.key,
-    required this.imagePath, // p.ej. 'assets/Player-1.png'
-    required this.heroName,  // p.ej. 'Bombardier'
+    required this.imagePath, 
+    required this.heroName, 
     this.description =
         'Super smash bros ultimate villagers from the animal crossing series. This troops fight most effectively in large group',
   });
@@ -36,7 +36,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
         ),
         child: Stack(
           children: [
-            // =================== CONTENIDO DESPLAZABLE ===================
+         
             ListView(
               controller: _scrollController,
               padding: const EdgeInsets.only(top: appBarHeight + 12, bottom: 28),
@@ -46,7 +46,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
                 const SizedBox(height: 20),
 
-                // Nombre del héroe (doble texto superpuesto)
+                // Nombre del héroe 
                 _HeroDetailsName(widget.heroName),
 
                 const SizedBox(height: 12),
@@ -72,7 +72,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   children: [
                     const SizedBox(width: 28),
 
-                    // Add Favourite (Outlined)
+                    // Add Favourite 
                     Expanded(
                       child: SizedBox(
                         height: 54,
@@ -95,7 +95,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
                     const SizedBox(width: 14),
 
-                    // OK (Elevated con degradado)
+          
                     Expanded(
                       child: SizedBox(
                         height: 56,
@@ -142,7 +142,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
               ],
             ),
 
-            // =================== APP BAR SUPERIOR ===================
+        
             SafeArea(
               child: SizedBox(
                 height: appBarHeight,
@@ -180,7 +180,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
 }
 
 
-// 3 capas translúcidas + imagen centrada
+
 class _HeroDetailsImage extends StatelessWidget {
   const _HeroDetailsImage(this.imagePath);
   final String imagePath;
@@ -223,11 +223,10 @@ class _HeroDetailsImage extends StatelessWidget {
                 ),
                 child: const Padding(
                   padding: EdgeInsets.all(8),
-                  child: Center(), // el contenedor del padding crea borde interior
+                  child: Center(),
                 ),
               ),
             ),
-            // Imagen por encima para asegurar nitidez
             Align(
               alignment: Alignment.center,
               child: Padding(
@@ -242,7 +241,6 @@ class _HeroDetailsImage extends StatelessWidget {
   }
 }
 
-// Nombre del héroe con doble texto superpuesto (sombra suave)
 class _HeroDetailsName extends StatelessWidget {
   const _HeroDetailsName(this.heroName);
   final String heroName;

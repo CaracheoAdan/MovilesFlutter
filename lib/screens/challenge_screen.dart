@@ -87,8 +87,8 @@ class HeroRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Tamaño de los atributos calculado para que NO haya overflow
-    final double attrSize = frontPlaneHeight * 0.26; // ~49 px
+   
+    final double attrSize = frontPlaneHeight * 0.26; 
 
     return Container(
       height: backPlaneHeight + 40, // espacio para ambos planos
@@ -97,7 +97,7 @@ class HeroRow extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Plano posterior (ligero)
+        
           Transform.translate(
             offset: const Offset(-10, 0),
             child: Transform(
@@ -116,7 +116,7 @@ class HeroRow extends StatelessWidget {
             ),
           ),
 
-          // Plano frontal (más marcado)
+          
           Transform.translate(
             offset: const Offset(-44, 0),
             child: Transform(
@@ -209,7 +209,7 @@ class HeroRow extends StatelessWidget {
   }
 }
 
-/* ----------------- Painter y widget de atributo ----------------- */
+
 
 class AttributePainter extends CustomPainter {
   final double progressPercent;
@@ -243,7 +243,7 @@ class AttributePainter extends CustomPainter {
     // Anillo de fondo
     canvas.drawCircle(center, radius - strokeWidth, strokeBgPaint);
 
-    // Arco de progreso (arranca arriba: -90°)
+    // Arco de progreso 
     final rect = Rect.fromCircle(center: center, radius: radius - (strokeWidth / 2));
     const startAngle = -math.pi / 2;
     final sweepAngle = (progressPercent / 100) * math.pi * 2;

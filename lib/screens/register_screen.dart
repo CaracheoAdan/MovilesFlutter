@@ -14,12 +14,12 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  // Soporte de cámara en móvil (no Web) - lo dejamos como estaba
+  // Soporte de cámara  
   final canUseCamera = !kIsWeb &&
       (defaultTargetPlatform == TargetPlatform.android ||
           defaultTargetPlatform == TargetPlatform.iOS);
 
-  // ✅ Form key para validaciones
+  // Form key para validaciones
   final _formKey = GlobalKey<FormState>();
 
   // Controllers
@@ -35,7 +35,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   void dispose() {
-    // El dispose libera recursos del TextEditingController; si no lo liberamos puede haber fugas de memoria y causar errores.
+    // El dispose libera recursos del TextEditingController,  si no lo liberamos puede haber fugas de memoria y causar errores.
     conUser.dispose();
     conPwd.dispose();
     conNombre.dispose();
@@ -92,7 +92,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Campos con validación (solo cambiamos esto)
+    // Campos con validación 
     final txtNombre = TextFormField(
       controller: conNombre,
       keyboardType: TextInputType.text,
@@ -180,7 +180,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
                 ),
-                // ✅ Form con _formKey y validación en el botón
+                //  Form con _formKey y validación en el botón
                 child: Form(
                   key: _formKey,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
