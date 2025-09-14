@@ -39,7 +39,7 @@ dependencies:
   sqflite: ^2.4.1
   path_provider: ^2.1.5
   image_picker: ^1.2.0
-
+  email_validator: ^3.0.0
 
 dev_dependencies:
   flutter_test:

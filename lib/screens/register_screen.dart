@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lottie/lottie.dart';
+import 'package:email_validator/email_validator.dart';
+import 'package:flutter/services.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -12,41 +14,47 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  // Controllers
-
+  // Soporte de cámara en móvil (no Web) - lo dejamos como estaba
   final canUseCamera = !kIsWeb &&
-    (defaultTargetPlatform == TargetPlatform.android ||
-     defaultTargetPlatform == TargetPlatform.iOS);
-     
+      (defaultTargetPlatform == TargetPlatform.android ||
+          defaultTargetPlatform == TargetPlatform.iOS);
+
+  // ✅ Form key para validaciones
+  final _formKey = GlobalKey<FormState>();
+
+  // Controllers
   final conUser = TextEditingController();
   final conPwd = TextEditingController();
   final conNombre = TextEditingController();
 
-  // Image picker y avatar deben ser campos del State
+  // Image picker y avatar
   final ImagePicker _picker = ImagePicker();
   XFile? _avatar;
 
   bool isValidating = false;
 
-  @override 
-  void dispose() { //El dipose liberar recursos de el textEditingController pero mantiene los listeners, si no los liveramos puede tener figas de memoria y causar errores.
+  @override
+  void dispose() {
+    // El dispose libera recursos del TextEditingController; si no lo liberamos puede haber fugas de memoria y causar errores.
     conUser.dispose();
     conPwd.dispose();
     conNombre.dispose();
     super.dispose();
   }
- Future<void> _pick(ImageSource source) async {
+
+  Future<void> _pick(ImageSource source) async {
     final XFile? file = await _picker.pickImage(
-      source: source, //eliges si es camara o galeria
+      source: source, // eliges si es camara o galeria
       maxWidth: 1024,
       imageQuality: 85,
     );
     if (file == null) return;
     setState(() => _avatar = file);
   }
-   ImageProvider? _avatarProvider() {
-    if (_avatar == null) return null; //Si el usuario aún no eligió foto, devolvemos null para que el CircleAvatar muestre el child (tu ícono de persona).
-    return FileImage(File(_avatar!.path)); // En Android/iOS, te da una ruta de archivo. Se muestra con FileImage(File(...)).
+
+  ImageProvider? _avatarProvider() {
+    if (_avatar == null) return null;
+    return FileImage(File(_avatar!.path)); // solo Android/iOS
   }
 
   void _showSource() {
@@ -61,13 +69,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ListTile(
               leading: const Icon(Icons.photo_library),
               title: const Text('Elegir de galería'),
-              onTap: () { Navigator.pop(context); _pick(ImageSource.gallery); },
+              onTap: () {
+                Navigator.pop(context);
+                _pick(ImageSource.gallery);
+              },
             ),
+            // Lo dejamos como estaba: usando supportsImageSource
             if (_picker.supportsImageSource(ImageSource.camera))
               ListTile(
                 leading: const Icon(Icons.photo_camera),
                 title: const Text('Tomar foto'),
-                onTap: () { Navigator.pop(context); _pick(ImageSource.camera); },
+                onTap: () {
+                  Navigator.pop(context);
+                  _pick(ImageSource.camera);
+                },
               ),
           ],
         ),
@@ -75,23 +90,42 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
-    final txtNombre = TextField(
+    // Campos con validación (solo cambiamos esto)
+    final txtNombre = TextFormField(
       controller: conNombre,
       keyboardType: TextInputType.text,
       decoration: const InputDecoration(hintText: 'Nombre completo'),
+      validator: (v) {
+        if (v == null || v.trim().isEmpty) return 'El nombre es obligatorio';
+        return null;
+      },
     );
-    final txtUser = TextField(
+
+    final txtUser = TextFormField(
       controller: conUser,
       keyboardType: TextInputType.emailAddress,
       decoration: const InputDecoration(hintText: 'Correo electrónico'),
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
+      validator: (v) {
+        final value = (v ?? '').trim();
+        if (value.isEmpty) return 'El correo es obligatorio';
+        if (!EmailValidator.validate(value)) return 'Formato de correo inválido';
+        return null;
+      },
     );
-    final txtPwd = TextField(
+
+    final txtPwd = TextFormField(
       controller: conPwd,
       obscureText: true,
       decoration: const InputDecoration(hintText: 'Contraseña'),
+      validator: (v) {
+        if (v == null || v.isEmpty) return 'La contraseña es obligatoria';
+        if (v.length < 6) return 'Mínimo 6 caracteres';
+        return null;
+      },
     );
 
     return Scaffold(
@@ -138,32 +172,57 @@ class _RegisterScreenState extends State<RegisterScreen> {
             Positioned(
               bottom: 80,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height * .25,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: ListView(
-                  children: [
-                    txtNombre,
-                    txtUser,
-                    txtPwd,
-                    const SizedBox(height: 12),
-                    TextButton(
-                      onPressed: () {
-                        isValidating = true;
-                        setState(() {});
-                        Future.delayed(const Duration(milliseconds: 3000)).then((_) {
-                          // Aquí procesa tu registro; _avatar?.path contiene la ruta/URL
-                          if (!mounted) return;
-                          Navigator.pushNamed(context, '/login');
-                        });
-                      },
-                      child: const Text("Register", style: TextStyle(fontSize: 20)),
-                    ),
-                  ],
+                // ✅ Form con _formKey y validación en el botón
+                child: Form(
+                  key: _formKey,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  child: ListView(
+                    children: [
+                      txtNombre,
+                      txtUser,
+                      txtPwd,
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: isValidating
+                              ? null
+                              : () {
+                                  FocusScope.of(context).unfocus(); // cierra teclado
+                                  if (_formKey.currentState!.validate()) {
+                                    setState(() => isValidating = true);
+                                    Future.delayed(
+                                      const Duration(milliseconds: 3000),
+                                    ).then((_) {
+                                      if (!mounted) return;
+                                      setState(() => isValidating = false);
+                                      Navigator.pushNamed(context, '/login');
+                                    });
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content:
+                                            Text('Corrige los campos marcados'),
+                                      ),
+                                    );
+                                  }
+                                },
+                          child: const Text(
+                            "Register",
+                            style: TextStyle(fontSize: 20),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
