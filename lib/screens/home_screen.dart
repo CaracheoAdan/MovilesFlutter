@@ -64,6 +64,20 @@ class _HomeScreenState extends State<HomeScreen> {
               subtitle: Text('Database Movies'),
               trailing: Icon(Icons.chevron_right),
               onTap: () => Navigator.pushNamed(context,"/listdb"),
+            ),
+            ListTile(
+              leading: Image.asset('assets/practica1_icon.png'),
+              title: Text("Practica 1"),
+              subtitle:  Text("Challenge Flutter"),
+              trailing: Icon(Icons.chevron_right),
+              onTap: () => Navigator.pushNamed(context, "/challenge")
+            ),
+            ListTile(
+               leading: Image.asset('assets/practica2_icon.png'),
+              title: Text("Practica3"),
+              subtitle:  Text("Challenge Figma"),
+              trailing: Icon(Icons.chevron_right),
+              onTap: () => Navigator.pushNamed(context, "/challengeFigma")
             )
           ],
         ),

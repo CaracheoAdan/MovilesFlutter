@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movilesejmplo1/screens/challenge_screen.dart';
+import 'package:movilesejmplo1/screens/challengefigma_screen.dart';
 import 'package:movilesejmplo1/screens/home_screen.dart';
 import 'package:movilesejmplo1/screens/login_screen.dart';
 import 'package:movilesejmplo1/screens/register_screen.dart';
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
             "/home": (context) => HomeScreen(),
             "/listdb" : (context) => const ListMovies(),
             "/challenge" : (context) => ChallengeScreen(),
+            "/challengeFigma" : (context) => ChallengefigmaScreen(),
             "/register" : (context) => RegisterScreen(),
           }, 
           title: 'Material App',
