@@ -33,7 +33,7 @@ class ChallengefigmaScreen extends StatefulWidget {
     );
 
     return Scaffold(
- body: Container(
+      body: Container(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
@@ -47,7 +47,7 @@ class ChallengefigmaScreen extends StatefulWidget {
           children: [
             Positioned(
               top: 200,
-              child: Text('Caracheo App',style:  TextStyle(color: const Color.fromARGB(255, 229, 226, 226), fontSize: 35, fontFamily: 'Cholo'),
+              child: Text('Sign In',style:  TextStyle(color: const Color.fromARGB(255, 229, 226, 226), fontSize: 35, fontFamily: 'Cholo'),
               ),
             ),
             Positioned( 
@@ -77,19 +77,6 @@ class ChallengefigmaScreen extends StatefulWidget {
                          size: 40,
                        ),
                       ),
-                      IconButton(
-                        onPressed: (){
-                          isValidating = true;
-                          setState(() {});
-                          Future.delayed(const Duration(milliseconds: 3000)).then((value){
-                            Navigator.pushNamed(context, '/register');
-                          });
-                        },
-                         icon: Icon(
-                          Icons.book,
-                         size: 40,
-                         )
-                      )
                     ],
                   ),
                 )
