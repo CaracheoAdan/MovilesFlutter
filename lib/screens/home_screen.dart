@@ -48,7 +48,26 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      drawer: const Drawer(),
+        drawer: Drawer(
+        child: ListView(
+          children: [
+            const UserAccountsDrawerHeader(
+              accountName: Text('Campos Caracheo Adan Javier'), 
+              accountEmail: Text('21031400@itcelaya.edu.mc'),
+              currentAccountPicture: CircleAvatar(
+                backgroundImage: NetworkImage('https://i.pravatar.cc/300'),
+              ),
+            ),
+            ListTile(
+              leading: Image.asset('assets/IconElegant.png'),
+              title: Text('List Movies'),
+              subtitle: Text('Database Movies'),
+              trailing: Icon(Icons.chevron_right),
+              onTap: () => Navigator.pushNamed(context,"/listdb"),
+            )
+          ],
+        ),
+      ),
       body: Stack(
       ),
       bottomNavigationBar: Padding(
