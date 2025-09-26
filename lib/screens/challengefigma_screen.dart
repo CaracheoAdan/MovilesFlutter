@@ -1,95 +1,229 @@
-  import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
-import 'package:movilesejmplo1/utils/value_listener.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ChallengefigmaScreen extends StatefulWidget {
-    const ChallengefigmaScreen({super.key});
-  
-    @override
-    State<ChallengefigmaScreen> createState() => _ChallengefigmaScreenState();
-  }
+  const ChallengefigmaScreen({super.key});
 
-  TextEditingController conUser = TextEditingController();
-  TextEditingController conPwd = TextEditingController();
-    bool isValidating = false;
+  @override
+  State<ChallengefigmaScreen> createState() => _ChallengefigmaScreenState();
+}
 
-  class _ChallengefigmaScreenState extends State<ChallengefigmaScreen> {
-    @override
-    Widget build(BuildContext context) {
-      final txtUser=TextField(
-      keyboardType: TextInputType.emailAddress,
-      controller: conUser,
-      decoration: InputDecoration(
-        hintText: 'UserName'
-      ),
-    );
+class _ChallengefigmaScreenState extends State<ChallengefigmaScreen> {
+  final TextEditingController conUser = TextEditingController();
+  final TextEditingController conPwd = TextEditingController();
 
-      final txtPwd=TextField(
-      obscureText: true,
-      controller: conPwd,
-      decoration: InputDecoration(
-        hintText: 'Password'
-      ),
-    );
+  bool isValidating = false;
 
-    return Scaffold(
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            fit: BoxFit.cover,
-            image: AssetImage("assets/fondo1.png")
-          )
-        ),  
-        child: Stack(
-          alignment: Alignment.topCenter,
-          children: [
-            Positioned(
-              top: 200,
-              child: Text('Sign In',style:  TextStyle(color: const Color.fromARGB(255, 229, 226, 226), fontSize: 35, fontFamily: 'Cholo'),
-              ),
+  Color get _brandYellow => const Color(0xFFFFB000); 
+  Color get _cardGray => const Color(0xFFE8E8E8); 
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
+    InputDecoration _fieldDeco(String hint) => InputDecoration(
+          hintText: hint,
+          hintStyle: GoogleFonts.inter(color: Colors.black54),
+          filled: true,
+          fillColor: _cardGray,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(18),
+            borderSide: BorderSide(color: _cardGray),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(18),
+            borderSide: BorderSide(color: Colors.black87, width: 1),
+          ),
+        );
+
+    Widget _socialButton({
+      required IconData icon,
+      required String label,
+      Color? iconColor,
+      VoidCallback? onTap,
+    }) {
+      return Material(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        elevation: 2,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+            child: Row(
+              children: [
+                FaIcon(icon, size: 24, color: iconColor ?? Colors.black87),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(label,
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      )),
+                ),
+                const Icon(Icons.arrow_right_alt, size: 22),
+              ],
             ),
-            Positioned( 
-              bottom: 80,
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  width:  MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height * .35,
-                  decoration: BoxDecoration(
-                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(20)
-                  ),
-                  child: ListView(
-                    children: [
-                      txtUser,
-                      txtPwd,
-                     IconButton(
-                      onPressed: () {
-                        isValidating = true;
-                        setState(() {});
-                        Future.delayed(const Duration(milliseconds: 3000)).then((value) {
-                          Navigator.pushNamed(context, '/home');                          // De esta manera navegas hacia la siguiente pantalla
-                      });
-                      },
-                       icon: Icon(
-                         Icons.login,
-                         size: 40,
-                       ),
-                      ),
-                    ],
-                  ),
-                )
-            ),
-           Positioned(
-              top: 300,
-              child: isValidating
-                  ? Lottie.asset("assets/loading2.json", height: 200)
-                  : Container(),
-            ),
-          ],
+          ),
         ),
-      ),
       );
     }
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Stack(
+        children: [
+          Container(
+            height: 140,
+            color: _brandYellow,
+            padding: const EdgeInsets.only(top: 40, left: 12, right: 12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                IconButton(
+                  splashRadius: 22,
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.arrow_back),
+                ),
+                const Spacer(),
+                Padding(
+                  padding: const EdgeInsets.only(top: 12, right: 6),
+                  child: Text(
+                    'Register',
+                    style: GoogleFonts.inter(
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Contenido
+          SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 140 - 16),
+                Text(
+                  'Sign In',
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 36,
+                  ),
+                ),
+                const SizedBox(height: 22),
+                TextField(
+                  controller: conUser,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: _fieldDeco('Username'),
+                ),
+                const SizedBox(height: 14),
+                TextField(
+                  controller: conPwd,
+                  obscureText: true,
+                  decoration: _fieldDeco('Password'),
+                ),
+                const SizedBox(height: 10),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    'Forgot Password',
+                    style: GoogleFonts.inter(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+
+                // Botón negro Sign Up
+                SizedBox(
+                  width: double.infinity,
+                  height: 44,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 0,
+                    ),
+                    onPressed: () {
+                      setState(() => isValidating = true);
+                      Future.delayed(const Duration(milliseconds: 1200), () {
+                        if (!mounted) return;
+                        setState(() => isValidating = false);
+                        Navigator.pushNamed(context, '/Mealfigma');
+                      });
+                    },
+                    child: Text(
+                      'Sign Up',
+                      style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 18),
+
+                // Botones sociales
+                _socialButton(
+                  icon: FontAwesomeIcons.google,
+                  label: 'Sign in with Google',
+                  iconColor: Colors.redAccent,
+                  onTap: () {},
+                ),
+                const SizedBox(height: 12),
+                _socialButton(
+                  icon: FontAwesomeIcons.facebook,
+                  label: 'Sign in with Facebook',
+                  iconColor: const Color(0xFF1877F2),
+                  onTap: () {},
+                ),
+
+                SizedBox(height: size.height * 0.12),
+              ],
+            ),
+          ),
+
+          // Footer amarillo con versión
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              height: 28,
+              width: double.infinity,
+              color: _brandYellow,
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.only(right: 12),
+              child: Text(
+                'v 1.0.0',
+                style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 12),
+              ),
+            ),
+          ),
+
+          // Mini loader al presionar Sign Up (opcional)
+          if (isValidating)
+            Container(
+              color: Colors.black.withOpacity(0.08),
+              child: const Center(
+                child: SizedBox(
+                  height: 48,
+                  width: 48,
+                  child: CircularProgressIndicator(strokeWidth: 3),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
   }
+}

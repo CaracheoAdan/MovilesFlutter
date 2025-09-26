@@ -3,6 +3,7 @@ import 'package:movilesejmplo1/screens/challenge_screen.dart';
 import 'package:movilesejmplo1/screens/challengefigma_screen.dart';
 import 'package:movilesejmplo1/screens/home_screen.dart';
 import 'package:movilesejmplo1/screens/login_screen.dart';
+import 'package:movilesejmplo1/screens/mealfigma_screen.dart';
 import 'package:movilesejmplo1/screens/register_screen.dart';
 import 'package:movilesejmplo1/utils/theme_app.dart';
 import 'package:movilesejmplo1/utils/value_listener.dart';
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
             "/challenge" : (context) => ChallengeScreen(),
             "/challengeFigma" : (context) => ChallengefigmaScreen(),
             "/register" : (context) => RegisterScreen(),
+            "/Mealfigma" : (context) => MealfigmaScreen(),
           }, 
           title: 'Material App',
           home: LoginScreen(),
