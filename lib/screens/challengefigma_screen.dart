@@ -103,7 +103,6 @@ class _ChallengefigmaScreenState extends State<ChallengefigmaScreen> {
             ),
           ),
 
-          // Contenido
           SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 18),
             child: Column(
@@ -142,7 +141,6 @@ class _ChallengefigmaScreenState extends State<ChallengefigmaScreen> {
                 ),
                 const SizedBox(height: 10),
 
-                // Botón negro Sign Up
                 SizedBox(
                   width: double.infinity,
                   height: 44,
@@ -174,7 +172,6 @@ class _ChallengefigmaScreenState extends State<ChallengefigmaScreen> {
 
                 const SizedBox(height: 18),
 
-                // Botones sociales
                 _socialButton(
                   icon: FontAwesomeIcons.google,
                   label: 'Sign in with Google',
@@ -194,7 +191,6 @@ class _ChallengefigmaScreenState extends State<ChallengefigmaScreen> {
             ),
           ),
 
-          // Footer amarillo con versión
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
@@ -210,7 +206,6 @@ class _ChallengefigmaScreenState extends State<ChallengefigmaScreen> {
             ),
           ),
 
-          // Mini loader al presionar Sign Up (opcional)
           if (isValidating)
             Container(
               color: Colors.black.withOpacity(0.08),

@@ -41,7 +41,6 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const SizedBox(height: 8),
-                  // Header: botón menú dentro de caja amarilla
                   Row(
                     children: [
                       Container(
@@ -66,7 +65,6 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
                   ),
                   const SizedBox(height: 16),
 
-                  // Thumbnails
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: List.generate(_thumbs.length, (i) {
@@ -122,8 +120,6 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
                   ),
 
                   const SizedBox(height: 8),
-
-                  // Selector de salsa
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.black,
@@ -209,10 +205,8 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
 
                   const SizedBox(height: 18),
 
-                  // Checkout + Qty
                   Row(
                     children: [
-                      // Botón Checkout  -> navega a Playfigma
                       Expanded(
                         child: SizedBox(
                           height: 48,
@@ -238,7 +232,6 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      // Selector cantidad
                       Container(
                         decoration: BoxDecoration(
                           color: Colors.white,
@@ -276,7 +269,6 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
               ),
             ),
 
-            // Footer amarillo fijo
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(

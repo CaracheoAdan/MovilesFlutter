@@ -8,10 +8,8 @@ class PlayfigmaScreen extends StatefulWidget {
 }
 
 class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
-  // Posición del knob (0.0 a 1.0)
   double _knob = 0.5;
 
-  // Colores base
   final Color _psBlue = const Color(0xFF3B82F6);
   final Color _pageBg = const Color(0xFFF2F5FA);
   final Color _header = const Color(0xFF10161F);
@@ -21,7 +19,7 @@ class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _psBlue, // borde azul exterior como en el mock
+      backgroundColor: _psBlue, 
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(10),
@@ -31,7 +29,6 @@ class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
               color: _pageBg,
               child: Column(
                 children: [
-                  // ===== HEADER =====
                   Container(
                     height: 86,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -44,7 +41,6 @@ class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
                     ),
                     child: Row(
                       children: [
-                        // Botón menú en tarjetita (navega a detalles)
                         Container(
                           width: 42,
                           height: 42,
@@ -76,7 +72,6 @@ class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
                     ),
                   ),
 
-                  // ===== HERO + OUTLINE TEXT =====
                   Expanded(
                     child: Stack(
                       alignment: Alignment.center,
@@ -86,7 +81,6 @@ class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
                             child: Center(child: _OutlineTitle()),
                           ),
                         ),
-                        // Control (tocar -> detalles)
                         Positioned(
                           top: 36,
                           left: 0,
@@ -101,7 +95,6 @@ class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
                           ),
                         ),
 
-                        // Óvalo con knob
                         Positioned(
                           bottom: 84,
                           child: _OvalKnob(
@@ -112,7 +105,6 @@ class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
                           ),
                         ),
 
-                        // ===== FEATURES CARDS =====
                         Positioned(
                           bottom: 16,
                           left: 16,
@@ -149,7 +141,6 @@ class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
                     ),
                   ),
 
-                  // ===== CTA =====
                   Padding(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -162,7 +153,7 @@ class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
                           shape: const StadiumBorder(),
                           elevation: 0,
                         ),
-                        onPressed: _goToDetails, // Buy Now -> detalles
+                        onPressed: _goToDetails, 
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -205,7 +196,6 @@ class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
   }
 }
 
-/// Texto grande con contorno "DUAL SENSE"
 class _OutlineTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -227,7 +217,6 @@ class _OutlineTitle extends StatelessWidget {
   }
 }
 
-/// Óvalo con un knob arrastrable
 class _OvalKnob extends StatelessWidget {
   final double width;
   final Color border;
@@ -260,7 +249,6 @@ class _OvalKnob extends StatelessWidget {
         },
         child: Stack(
           children: [
-            // Óvalo
             Container(
               width: width,
               height: height,
@@ -269,7 +257,6 @@ class _OvalKnob extends StatelessWidget {
                 border: Border.all(color: border, width: 1.4),
               ),
             ),
-            // Knob
             Positioned(
               left: (width - knobSize) * knob,
               top: (height - knobSize) / 2,
@@ -289,7 +276,6 @@ class _OvalKnob extends StatelessWidget {
   }
 }
 
-/// Tarjeta neumórfica de feature
 class _FeatureCard extends StatelessWidget {
   final IconData icon;
   final String title;

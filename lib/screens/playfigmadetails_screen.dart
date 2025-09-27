@@ -11,14 +11,14 @@ class _PlayfigmadetailsScreenState extends State<PlayfigmadetailsScreen> {
   final Color _psBlue = const Color(0xFF3B82F6);
   final Color _pageBg = const Color(0xFFF2F5FA);
 
-  int _selectedIndex = 1; // segunda tarjeta seleccionada (como en el mock)
+  int _selectedIndex = 1; 
   final Set<int> _favs = {1};
 
   final _items = const [
     (
       'Game console',
       'Playstation 5\nDigital Edition',
-      'https://i.imgur.com/vb5d9kU.png' // img ps5 DE
+      'https://i.imgur.com/vb5d9kU.png' 
     ),
     (
       'Game console',
@@ -40,7 +40,7 @@ class _PlayfigmadetailsScreenState extends State<PlayfigmadetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _psBlue, // marco azul exterior
+      backgroundColor: _psBlue, 
       body: SafeArea(
         child: Stack(
           children: [
@@ -52,7 +52,6 @@ class _PlayfigmadetailsScreenState extends State<PlayfigmadetailsScreen> {
                   color: _pageBg,
                   child: Column(
                     children: [
-                      // ===== Header =====
                       Padding(
                         padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
                         child: Row(
@@ -75,7 +74,6 @@ class _PlayfigmadetailsScreenState extends State<PlayfigmadetailsScreen> {
                         ),
                       ),
 
-                      // ===== Grid =====
                       Expanded(
                         child: GridView.builder(
                           padding: const EdgeInsets.fromLTRB(16, 6, 16, 110),
@@ -119,7 +117,6 @@ class _PlayfigmadetailsScreenState extends State<PlayfigmadetailsScreen> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    // corazón
                                     Align(
                                       alignment: Alignment.topLeft,
                                       child: InkWell(
@@ -183,7 +180,6 @@ class _PlayfigmadetailsScreenState extends State<PlayfigmadetailsScreen> {
               ),
             ),
 
-            // ===== Bottom bar flotante =====
             Positioned(
               left: 26,
               right: 26,
