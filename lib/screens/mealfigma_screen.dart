@@ -14,7 +14,6 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
   int _selectedSauce = 0;
 
   final _thumbs = [
-    // Puedes cambiar por AssetImage si ya tienes assets
     const NetworkImage('https://picsum.photos/seed/kota1/200/200'),
     const NetworkImage('https://picsum.photos/seed/kota2/200/200'),
     const NetworkImage('https://picsum.photos/seed/kota3/200/200'),
@@ -62,8 +61,7 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
                   const Center(
                     child: Text(
                       'Create your kota',
-                      style:
-                          TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -107,44 +105,47 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
 
                   const SizedBox(height: 18),
 
-                  // Imagen grande del platillo
+                
                   AspectRatio(
                     aspectRatio: 1.4,
-                    child: Center(
-                      child: Image(
-                        image: _thumbs[_selectedThumb],
-                        fit: BoxFit.contain,
-                      ),
-                    ),
+                    child: GestureDetector(
+                     onTap: () => Navigator.pushNamed(context, '/Playfigma'),
+                     child: Center(
+                       child: Image(
+                          image: _thumbs[
+                           (_selectedThumb.clamp(0, _thumbs.length - 1) as int)
+                          ],
+                          fit: BoxFit.contain,
+                        ),
+                     ),
+                   ),
                   ),
 
                   const SizedBox(height: 8),
 
-                  // Selector de salsa (dropdown estilo tarjeta negra de título)
+                  // Selector de salsa
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.black,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
                     child: Row(
                       children: [
                         const Text(
                           'Select Sauce',
                           style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.w700),
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                         const Spacer(),
-                        const Icon(Icons.local_drink_outlined,
-                            color: Colors.white),
+                        const Icon(Icons.local_drink_outlined, color: Colors.white),
                         const SizedBox(width: 8),
                         InkWell(
                           onTap: () => setState(() => _sauceOpen = !_sauceOpen),
                           child: Icon(
-                            _sauceOpen
-                                ? Icons.keyboard_arrow_up
-                                : Icons.keyboard_arrow_down,
+                            _sauceOpen ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
                             color: Colors.white,
                           ),
                         ),
@@ -152,7 +153,6 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
                     ),
                   ),
 
-                  // Lista de salsas
                   if (_sauceOpen) ...[
                     Container(
                       decoration: BoxDecoration(
@@ -176,13 +176,11 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
                           return InkWell(
                             onTap: () => setState(() => _selectedSauce = i),
                             child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 14, vertical: 14),
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
                               decoration: BoxDecoration(
                                 color: selected ? _tileGray : Colors.white,
                                 border: Border(
-                                  top: BorderSide(
-                                      color: Colors.grey.shade300, width: 1),
+                                  top: BorderSide(color: Colors.grey.shade300, width: 1),
                                 ),
                               ),
                               child: Row(
@@ -191,19 +189,14 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
                                     child: Text(
                                       name,
                                       style: TextStyle(
-                                        fontWeight: selected
-                                            ? FontWeight.w700
-                                            : FontWeight.w500,
-                                        decoration: selected
-                                            ? TextDecoration.underline
-                                            : TextDecoration.none,
+                                        fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                                        decoration: selected ? TextDecoration.underline : TextDecoration.none,
                                       ),
                                     ),
                                   ),
                                   Text(
                                     priceLabel,
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.w700),
+                                    style: const TextStyle(fontWeight: FontWeight.w700),
                                   ),
                                 ],
                               ),
@@ -219,7 +212,7 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
                   // Checkout + Qty
                   Row(
                     children: [
-                      // Botón Checkout
+                      // Botón Checkout  -> navega a Playfigma
                       Expanded(
                         child: SizedBox(
                           height: 48,
@@ -232,19 +225,14 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
                               elevation: 0,
                             ),
                             onPressed: () {
-                              // Aquí iría tu flujo de pago / carrito
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                      'Checkout: qty $_qty • sauce ${_sauces[_selectedSauce].$1}'),
-                                ),
-                              );
+                              Navigator.pushNamed(context, '/Playfigmadetails');
                             },
                             child: const Text(
                               'Checkout',
                               style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w700),
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
                         ),
@@ -267,16 +255,13 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
                         child: Row(
                           children: [
                             IconButton(
-                              onPressed: () =>
-                                  setState(() => _qty = (_qty - 1).clamp(1, 99)),
+                              onPressed: () => setState(() => _qty = (_qty - 1).clamp(1, 99) as int),
                               icon: const Icon(Icons.remove),
                             ),
                             Text('$_qty',
-                                style: const TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w700)),
+                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
                             IconButton(
-                              onPressed: () =>
-                                  setState(() => _qty = (_qty + 1).clamp(1, 99)),
+                              onPressed: () => setState(() => _qty = (_qty + 1).clamp(1, 99) as int),
                               icon: const Icon(Icons.add),
                             ),
                           ],
@@ -306,4 +291,3 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
     );
   }
 }
-
