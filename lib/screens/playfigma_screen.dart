@@ -19,7 +19,7 @@ class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _psBlue, 
+      backgroundColor: _psBlue,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(10),
@@ -29,6 +29,7 @@ class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
               color: _pageBg,
               child: Column(
                 children: [
+                  // Header
                   Container(
                     height: 86,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -54,8 +55,7 @@ class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
                           ),
                         ),
                         const SizedBox(width: 14),
-                        const Icon(Icons.sports_esports,
-                            color: Colors.white, size: 22),
+                        const Icon(Icons.sports_esports, color: Colors.white, size: 22),
                         const SizedBox(width: 6),
                         const Text(
                           'PS5',
@@ -72,29 +72,31 @@ class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
                     ),
                   ),
 
+                  // Hero + outline
                   Expanded(
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
                         Positioned.fill(
-                          child: IgnorePointer(
-                            child: Center(child: _OutlineTitle()),
-                          ),
+                          child: IgnorePointer(child: Center(child: _OutlineTitle())),
                         ),
+
+                        // ✅ Imagen desde assets
                         Positioned(
                           top: 36,
                           left: 0,
                           right: 0,
                           child: GestureDetector(
                             onTap: _goToDetails,
-                            child: Image.network(
-                              'https://i.imgur.com/3h4J9rJ.png',
+                            child: Image.asset(
+                              'assets/dualsense.png',
                               height: 200,
                               fit: BoxFit.contain,
                             ),
                           ),
                         ),
 
+                        // Óvalo con knob
                         Positioned(
                           bottom: 84,
                           child: _OvalKnob(
@@ -105,35 +107,18 @@ class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
                           ),
                         ),
 
+                        // Features
                         Positioned(
                           bottom: 16,
                           left: 16,
                           right: 16,
                           child: Row(
                             children: const [
-                              Expanded(
-                                child: _FeatureCard(
-                                  icon: Icons.mic_none_rounded,
-                                  title: 'Built-In',
-                                  subtitle: 'Microphone',
-                                ),
-                              ),
+                              Expanded(child: _FeatureCard(icon: Icons.mic_none_rounded, title: 'Built-In', subtitle: 'Microphone')),
                               SizedBox(width: 12),
-                              Expanded(
-                                child: _FeatureCard(
-                                  icon: Icons.headset_rounded,
-                                  title: 'Headset',
-                                  subtitle: 'Jack',
-                                ),
-                              ),
+                              Expanded(child: _FeatureCard(icon: Icons.headset_rounded, title: 'Headset', subtitle: 'Jack')),
                               SizedBox(width: 12),
-                              Expanded(
-                                child: _FeatureCard(
-                                  icon: Icons.sensors_rounded,
-                                  title: 'Motion',
-                                  subtitle: 'Sensor',
-                                ),
-                              ),
+                              Expanded(child: _FeatureCard(icon: Icons.sensors_rounded, title: 'Motion', subtitle: 'Sensor')),
                             ],
                           ),
                         ),
@@ -141,9 +126,9 @@ class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
                     ),
                   ),
 
+                  // CTA
                   Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                     child: SizedBox(
                       width: double.infinity,
                       height: 58,
@@ -153,34 +138,22 @@ class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
                           shape: const StadiumBorder(),
                           elevation: 0,
                         ),
-                        onPressed: _goToDetails, 
+                        onPressed: _goToDetails,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 14, vertical: 8),
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(20),
                               ),
-                              child: const Text(
-                                '\$70',
-                                style: TextStyle(
-                                  color: Colors.black87,
-                                  fontWeight: FontWeight.w800,
-                                ),
-                              ),
+                              child: const Text('\$70',
+                                  style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w800)),
                             ),
                             const SizedBox(width: 12),
-                            const Text(
-                              'Buy Now',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.white,
-                              ),
-                            ),
+                            const Text('Buy Now',
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white)),
                           ],
                         ),
                       ),
@@ -263,10 +236,7 @@ class _OvalKnob extends StatelessWidget {
               child: Container(
                 width: knobSize,
                 height: knobSize,
-                decoration: BoxDecoration(
-                  color: border,
-                  shape: BoxShape.circle,
-                ),
+                decoration: BoxDecoration(color: border, shape: BoxShape.circle),
               ),
             ),
           ],
@@ -281,11 +251,7 @@ class _FeatureCard extends StatelessWidget {
   final String title;
   final String subtitle;
 
-  const _FeatureCard({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-  });
+  const _FeatureCard({required this.icon, required this.title, required this.subtitle});
 
   @override
   Widget build(BuildContext context) {
@@ -295,11 +261,7 @@ class _FeatureCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(.08),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
-          ),
+          BoxShadow(color: Colors.black.withOpacity(.08), blurRadius: 12, offset: const Offset(0, 6)),
         ],
       ),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -308,21 +270,8 @@ class _FeatureCard extends StatelessWidget {
         children: [
           Icon(icon, color: Colors.black87, size: 22),
           const SizedBox(height: 6),
-          Text(
-            title,
-            style: const TextStyle(
-              fontWeight: FontWeight.w800,
-              fontSize: 12,
-            ),
-          ),
-          Text(
-            subtitle,
-            style: const TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 11,
-              color: Colors.black54,
-            ),
-          ),
+          Text(title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12)),
+          Text(subtitle, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 11, color: Colors.black54)),
         ],
       ),
     );

@@ -11,36 +11,21 @@ class _PlayfigmadetailsScreenState extends State<PlayfigmadetailsScreen> {
   final Color _psBlue = const Color(0xFF3B82F6);
   final Color _pageBg = const Color(0xFFF2F5FA);
 
-  int _selectedIndex = 1; 
+  int _selectedIndex = 1; // seleccionada (azul)
   final Set<int> _favs = {1};
 
+  // ✅ Ahora todos los paths son de assets locales
   final _items = const [
-    (
-      'Game console',
-      'Playstation 5\nDigital Edition',
-      'https://i.imgur.com/vb5d9kU.png' 
-    ),
-    (
-      'Game console',
-      'Playstation 5',
-      'https://i.imgur.com/1vSb5wB.png'
-    ),
-    (
-      'Gaming Controller',
-      'DualSense\nWireless Controller',
-      'https://i.imgur.com/3h4J9rJ.png'
-    ),
-    (
-      'Audio and Communication',
-      'Wireless\nHeadset',
-      'https://i.imgur.com/T4w8fZp.png'
-    ),
+    ('Game console', 'Playstation 5\nDigital Edition', 'assets/ps5_digital.png'),
+    ('Game console', 'Playstation 5', 'assets/ps5.png'),
+    ('Gaming Controller', 'DualSense\nWireless Controller', 'assets/dualsense.png'),
+    ('Audio and Communication', 'Wireless\nHeadset', 'assets/headset.png'),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _psBlue, 
+      backgroundColor: _psBlue,
       body: SafeArea(
         child: Stack(
           children: [
@@ -52,6 +37,7 @@ class _PlayfigmadetailsScreenState extends State<PlayfigmadetailsScreen> {
                   color: _pageBg,
                   child: Column(
                     children: [
+                      // Header
                       Padding(
                         padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
                         child: Row(
@@ -74,19 +60,19 @@ class _PlayfigmadetailsScreenState extends State<PlayfigmadetailsScreen> {
                         ),
                       ),
 
+                      // Grid 2x2
                       Expanded(
                         child: GridView.builder(
                           padding: const EdgeInsets.fromLTRB(16, 6, 16, 110),
                           itemCount: _items.length,
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
                             crossAxisSpacing: 14,
                             mainAxisSpacing: 14,
                             childAspectRatio: .74,
                           ),
                           itemBuilder: (context, i) {
-                            final (cat, name, img) = _items[i];
+                            final (String cat, String name, String img) = _items[i];
                             final selected = i == _selectedIndex;
 
                             return GestureDetector(
@@ -96,8 +82,7 @@ class _PlayfigmadetailsScreenState extends State<PlayfigmadetailsScreen> {
                               },
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color:
-                                      selected ? _psBlue.withOpacity(.18) : Colors.white,
+                                  color: selected ? _psBlue.withOpacity(.18) : Colors.white,
                                   borderRadius: BorderRadius.circular(18),
                                   boxShadow: [
                                     BoxShadow(
@@ -107,9 +92,7 @@ class _PlayfigmadetailsScreenState extends State<PlayfigmadetailsScreen> {
                                     ),
                                   ],
                                   border: Border.all(
-                                    color: selected
-                                        ? _psBlue
-                                        : Colors.transparent,
+                                    color: selected ? _psBlue : Colors.transparent,
                                     width: selected ? 2 : 0,
                                   ),
                                 ),
@@ -117,33 +100,32 @@ class _PlayfigmadetailsScreenState extends State<PlayfigmadetailsScreen> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+                                    // corazón
                                     Align(
                                       alignment: Alignment.topLeft,
                                       child: InkWell(
                                         onTap: () {
                                           setState(() {
-                                            _favs.contains(i)
-                                                ? _favs.remove(i)
-                                                : _favs.add(i);
+                                            _favs.contains(i) ? _favs.remove(i) : _favs.add(i);
                                           });
                                         },
                                         child: Icon(
                                           _favs.contains(i)
                                               ? Icons.favorite
                                               : Icons.favorite_border,
-                                          color: _favs.contains(i)
-                                              ? _psBlue
-                                              : Colors.black26,
+                                          color: _favs.contains(i) ? _psBlue : Colors.black26,
                                           size: 18,
                                         ),
                                       ),
                                     ),
                                     const SizedBox(height: 6),
+                                    // ✅ Imagen desde assets
                                     Expanded(
                                       child: Center(
-                                        child: Image.network(
+                                        child: Image.asset(
                                           img,
                                           fit: BoxFit.contain,
+                                          height: 90,
                                         ),
                                       ),
                                     ),
@@ -180,6 +162,7 @@ class _PlayfigmadetailsScreenState extends State<PlayfigmadetailsScreen> {
               ),
             ),
 
+            // Bottom bar flotante
             Positioned(
               left: 26,
               right: 26,
@@ -246,5 +229,5 @@ class _NavIcon extends StatelessWidget {
       onPressed: () {},
       icon: Icon(icon, color: Colors.white70),
     );
-    }
+  }
 }
