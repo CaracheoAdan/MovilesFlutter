@@ -18,6 +18,12 @@ class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // 👇 Leemos argumentos (opcionales)
+    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final String asset = (args?['asset'] as String?) ?? 'assets/dualsense.png';
+    final String? name = args?['name'] as String?;
+    final String? cat = args?['cat'] as String?;
+
     return Scaffold(
       backgroundColor: _psBlue,
       body: SafeArea(
@@ -57,9 +63,10 @@ class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
                         const SizedBox(width: 14),
                         const Icon(Icons.sports_esports, color: Colors.white, size: 22),
                         const SizedBox(width: 6),
-                        const Text(
-                          'PS5',
-                          style: TextStyle(
+                        Text(
+                          // Si trae nombre, lo muestro sutil; si no, "PS5"
+                          name == null ? 'PS5' : 'PS5 • ${name.split('\n').first}',
+                          style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w700,
                             fontSize: 18,
@@ -78,10 +85,12 @@ class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
                       alignment: Alignment.center,
                       children: [
                         Positioned.fill(
-                          child: IgnorePointer(child: Center(child: _OutlineTitle())),
+                          child: IgnorePointer(
+                            child: Center(child: _OutlineTitle()),
+                          ),
                         ),
 
-                        // ✅ Imagen desde assets
+                        // ✅ Imagen dinámica según el item seleccionado
                         Positioned(
                           top: 36,
                           left: 0,
@@ -89,7 +98,7 @@ class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
                           child: GestureDetector(
                             onTap: _goToDetails,
                             child: Image.asset(
-                              'assets/dualsense.png',
+                              asset,
                               height: 200,
                               fit: BoxFit.contain,
                             ),
@@ -107,7 +116,7 @@ class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
                           ),
                         ),
 
-                        // Features
+                        // Features (genéricas; si quieres, las personalizo por categoría)
                         Positioned(
                           bottom: 16,
                           left: 16,
@@ -144,12 +153,8 @@ class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
                           children: [
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: const Text('\$70',
-                                  style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w800)),
+                              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
+                              child: const Text('\$70', style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w800)),
                             ),
                             const SizedBox(width: 12),
                             const Text('Buy Now',
@@ -196,12 +201,7 @@ class _OvalKnob extends StatelessWidget {
   final double knob; // 0.0 - 1.0
   final ValueChanged<double> onChanged;
 
-  const _OvalKnob({
-    required this.width,
-    required this.border,
-    required this.knob,
-    required this.onChanged,
-  });
+  const _OvalKnob({required this.width, required this.border, required this.knob, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -233,11 +233,7 @@ class _OvalKnob extends StatelessWidget {
             Positioned(
               left: (width - knobSize) * knob,
               top: (height - knobSize) / 2,
-              child: Container(
-                width: knobSize,
-                height: knobSize,
-                decoration: BoxDecoration(color: border, shape: BoxShape.circle),
-              ),
+              child: Container(width: knobSize, height: knobSize, decoration: BoxDecoration(color: border, shape: BoxShape.circle)),
             ),
           ],
         ),
@@ -250,7 +246,6 @@ class _FeatureCard extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
-
   const _FeatureCard({required this.icon, required this.title, required this.subtitle});
 
   @override
@@ -260,9 +255,7 @@ class _FeatureCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(.08), blurRadius: 12, offset: const Offset(0, 6)),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(.08), blurRadius: 12, offset: const Offset(0, 6))],
       ),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       child: Column(

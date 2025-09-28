@@ -14,12 +14,12 @@ class _PlayfigmadetailsScreenState extends State<PlayfigmadetailsScreen> {
   int _selectedIndex = 1; // seleccionada (azul)
   final Set<int> _favs = {1};
 
-  // ✅ Ahora todos los paths son de assets locales
-  final _items = const [
-    ('Game console', 'Playstation 5\nDigital Edition', 'assets/ps5_digital.png'),
-    ('Game console', 'Playstation 5', 'assets/ps5.png'),
-    ('Gaming Controller', 'DualSense\nWireless Controller', 'assets/dualsense.png'),
-    ('Audio and Communication', 'Wireless\nHeadset', 'assets/headset.png'),
+  // ✅ Assets locales
+  final List<({String cat, String name, String asset})> _items = const [
+    (cat: 'Game console', name: 'Playstation 5\nDigital Edition', asset: 'assets/ps5_digital.png'),
+    (cat: 'Game console', name: 'Playstation 5', asset: 'assets/ps5.png'),
+    (cat: 'Gaming Controller', name: 'DualSense\nWireless Controller', asset: 'assets/dualsense.png'),
+    (cat: 'Audio and Communication', name: 'Wireless\nHeadset', asset: 'assets/headset.png'),
   ];
 
   @override
@@ -46,14 +46,7 @@ class _PlayfigmadetailsScreenState extends State<PlayfigmadetailsScreen> {
                             const SizedBox(width: 12),
                             const Icon(Icons.sports_esports, size: 22),
                             const SizedBox(width: 6),
-                            const Text(
-                              'PS5',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w800,
-                                fontSize: 18,
-                                letterSpacing: 1.2,
-                              ),
-                            ),
+                            const Text('PS5', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, letterSpacing: 1.2)),
                             const Spacer(),
                             _roundBtn(icon: Icons.settings),
                           ],
@@ -72,83 +65,61 @@ class _PlayfigmadetailsScreenState extends State<PlayfigmadetailsScreen> {
                             childAspectRatio: .74,
                           ),
                           itemBuilder: (context, i) {
-                            final (String cat, String name, String img) = _items[i];
+                            final item = _items[i];
                             final selected = i == _selectedIndex;
 
                             return GestureDetector(
                               onTap: () {
                                 setState(() => _selectedIndex = i);
-                                Navigator.pushNamed(context, '/Playfigma');
+                                // 👇 Pasamos argumentos a Playfigma
+                                Navigator.pushNamed(
+                                  context,
+                                  '/Playfigma',
+                                  arguments: {
+                                    'cat': item.cat,
+                                    'name': item.name,
+                                    'asset': item.asset,
+                                  },
+                                );
                               },
                               child: Container(
                                 decoration: BoxDecoration(
                                   color: selected ? _psBlue.withOpacity(.18) : Colors.white,
                                   borderRadius: BorderRadius.circular(18),
                                   boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(.08),
-                                      blurRadius: 12,
-                                      offset: const Offset(0, 6),
-                                    ),
+                                    BoxShadow(color: Colors.black.withOpacity(.08), blurRadius: 12, offset: const Offset(0, 6)),
                                   ],
-                                  border: Border.all(
-                                    color: selected ? _psBlue : Colors.transparent,
-                                    width: selected ? 2 : 0,
-                                  ),
+                                  border: Border.all(color: selected ? _psBlue : Colors.transparent, width: selected ? 2 : 0),
                                 ),
                                 padding: const EdgeInsets.all(10),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    // corazón
                                     Align(
                                       alignment: Alignment.topLeft,
                                       child: InkWell(
-                                        onTap: () {
-                                          setState(() {
-                                            _favs.contains(i) ? _favs.remove(i) : _favs.add(i);
-                                          });
-                                        },
+                                        onTap: () => setState(() => _favs.contains(i) ? _favs.remove(i) : _favs.add(i)),
                                         child: Icon(
-                                          _favs.contains(i)
-                                              ? Icons.favorite
-                                              : Icons.favorite_border,
+                                          _favs.contains(i) ? Icons.favorite : Icons.favorite_border,
                                           color: _favs.contains(i) ? _psBlue : Colors.black26,
                                           size: 18,
                                         ),
                                       ),
                                     ),
                                     const SizedBox(height: 6),
-                                    // ✅ Imagen desde assets
                                     Expanded(
                                       child: Center(
-                                        child: Image.asset(
-                                          img,
-                                          fit: BoxFit.contain,
-                                          height: 90,
-                                        ),
+                                        child: Image.asset(item.asset, fit: BoxFit.contain, height: 90),
                                       ),
                                     ),
                                     const SizedBox(height: 8),
-                                    Text(
-                                      cat,
-                                      style: const TextStyle(
-                                        color: Colors.black54,
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
+                                    Text(item.cat,
+                                        style: const TextStyle(color: Colors.black54, fontSize: 11, fontWeight: FontWeight.w600)),
                                     const SizedBox(height: 4),
-                                    Text(
-                                      name,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        color: _psBlue,
-                                        height: 1.05,
-                                        fontWeight: FontWeight.w800,
-                                      ),
-                                    ),
+                                    Text(item.name,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(color: _psBlue, height: 1.05, fontWeight: FontWeight.w800)),
                                   ],
                                 ),
                               ),
@@ -172,13 +143,7 @@ class _PlayfigmadetailsScreenState extends State<PlayfigmadetailsScreen> {
                 decoration: BoxDecoration(
                   color: const Color(0xFF10161F),
                   borderRadius: BorderRadius.circular(32),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(.25),
-                      blurRadius: 16,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
+                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(.25), blurRadius: 16, offset: const Offset(0, 8))],
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 18),
                 child: Row(
@@ -205,13 +170,7 @@ class _PlayfigmadetailsScreenState extends State<PlayfigmadetailsScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(.08),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(.08), blurRadius: 10, offset: const Offset(0, 4))],
       ),
       child: Icon(icon, size: 20),
     );
@@ -224,10 +183,6 @@ class _NavIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      splashRadius: 24,
-      onPressed: () {},
-      icon: Icon(icon, color: Colors.white70),
-    );
+    return IconButton(splashRadius: 24, onPressed: () {}, icon: Icon(icon, color: Colors.white70));
   }
 }
