@@ -11,10 +11,9 @@ class _PlayfigmadetailsScreenState extends State<PlayfigmadetailsScreen> {
   final Color _psBlue = const Color(0xFF3B82F6);
   final Color _pageBg = const Color(0xFFF2F5FA);
 
-  int _selectedIndex = 1; // seleccionada (azul)
+  int _selectedIndex = 1; 
   final Set<int> _favs = {1};
 
-  // ✅ Assets locales
   final List<({String cat, String name, String asset})> _items = const [
     (cat: 'Game console', name: 'Playstation 5\nDigital Edition', asset: 'assets/ps5_digital.png'),
     (cat: 'Game console', name: 'Playstation 5', asset: 'assets/ps5.png'),
@@ -53,7 +52,6 @@ class _PlayfigmadetailsScreenState extends State<PlayfigmadetailsScreen> {
                         ),
                       ),
 
-                      // Grid 2x2
                       Expanded(
                         child: GridView.builder(
                           padding: const EdgeInsets.fromLTRB(16, 6, 16, 110),
@@ -71,7 +69,6 @@ class _PlayfigmadetailsScreenState extends State<PlayfigmadetailsScreen> {
                             return GestureDetector(
                               onTap: () {
                                 setState(() => _selectedIndex = i);
-                                // 👇 Pasamos argumentos a Playfigma
                                 Navigator.pushNamed(
                                   context,
                                   '/Playfigma',
@@ -133,7 +130,6 @@ class _PlayfigmadetailsScreenState extends State<PlayfigmadetailsScreen> {
               ),
             ),
 
-            // Bottom bar flotante
             Positioned(
               left: 26,
               right: 26,

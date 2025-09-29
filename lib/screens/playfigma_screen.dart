@@ -18,7 +18,6 @@ class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // 👇 Leemos argumentos (opcionales)
     final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     final String asset = (args?['asset'] as String?) ?? 'assets/dualsense.png';
     final String? name = args?['name'] as String?;
@@ -35,7 +34,6 @@ class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
               color: _pageBg,
               child: Column(
                 children: [
-                  // Header
                   Container(
                     height: 86,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -64,7 +62,6 @@ class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
                         const Icon(Icons.sports_esports, color: Colors.white, size: 22),
                         const SizedBox(width: 6),
                         Text(
-                          // Si trae nombre, lo muestro sutil; si no, "PS5"
                           name == null ? 'PS5' : 'PS5 • ${name.split('\n').first}',
                           style: const TextStyle(
                             color: Colors.white,
@@ -79,7 +76,6 @@ class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
                     ),
                   ),
 
-                  // Hero + outline
                   Expanded(
                     child: Stack(
                       alignment: Alignment.center,
@@ -90,7 +86,6 @@ class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
                           ),
                         ),
 
-                        // ✅ Imagen dinámica según el item seleccionado
                         Positioned(
                           top: 36,
                           left: 0,
@@ -105,7 +100,6 @@ class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
                           ),
                         ),
 
-                        // Óvalo con knob
                         Positioned(
                           bottom: 84,
                           child: _OvalKnob(
@@ -116,7 +110,6 @@ class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
                           ),
                         ),
 
-                        // Features (genéricas; si quieres, las personalizo por categoría)
                         Positioned(
                           bottom: 16,
                           left: 16,
