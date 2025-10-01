@@ -57,7 +57,7 @@ class _ListMoviesState extends State<ListMovies> {
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   IconButton(
-                                    onPressed: () {},
+                                    onPressed: () => Navigator.pushNamed(context, "/add",arguments: obj), //arguments: obj manda los parametros entre pantallas
                                     icon: Icon(Icons.edit_sharp),
                                   ),
                                   // Expanded(child: Container()),
@@ -66,7 +66,7 @@ class _ListMoviesState extends State<ListMovies> {
                                       return showDialog(
                                         context: context,
                                         builder: (context) =>
-                                            _buildAlertDialog(),
+                                            _buildAlertDialog(obj.idMovie!),
                                       );
                                     },
                                     icon: Icon(Icons.delete_sharp),
@@ -88,13 +88,24 @@ class _ListMoviesState extends State<ListMovies> {
     );
   }
 
-  Widget _buildAlertDialog() {
+  Widget _buildAlertDialog(int idMovie) {
     return AlertDialog(
       title: Text("Mensaje del sistema"),
       content: Text("Deseas eliminar el registro? "),
       actions: [
         TextButton(
-          onPressed: () {},
+          onPressed: () => db!.DELETE("tblMovies",idMovie).then((value){
+            final msj;
+            if( value > 0 ){
+                msj = "Registro borrado exitosamente";
+              setState(() {});
+            }else{
+               msj = "No se elimino el registro";
+            }
+            final snackBar = SnackBar(content: Text(msj));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            Navigator.pop(context);
+          }),
           child: Text("Aceptar", style: TextStyle(color: Colors.black)),
         ),
         TextButton(
