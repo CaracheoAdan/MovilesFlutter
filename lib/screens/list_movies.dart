@@ -40,15 +40,41 @@ class _ListMoviesState extends State<ListMovies> {
           } else {
             if (snapshot.hasData) {
               return snapshot.data!.isNotEmpty
-                  ? ListView.builder(
+                  ? ListView.separated(
+                      separatorBuilder: (context, index) => Divider(),
+                      itemCount: snapshot.data!.length,
                       itemBuilder: (context, index) {
                         // data generated objetc
                         final obj = snapshot.data![index];
                         return Container(
                           height: 100,
-                          color: Colors.black,
+                          color: Colors.grey,
                           // child: Text(snapshot.data[index].nameMovie),
-                          child: Text(obj.nameMovie!),
+                          child: Column(
+                            children: [
+                              Text(obj.nameMovie!),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  IconButton(
+                                    onPressed: () {},
+                                    icon: Icon(Icons.edit_sharp),
+                                  ),
+                                  // Expanded(child: Container()),
+                                  IconButton(
+                                    onPressed: () async {
+                                      return showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                            _buildAlertDialog(),
+                                      );
+                                    },
+                                    icon: Icon(Icons.delete_sharp),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         );
                       },
                     )
@@ -59,6 +85,23 @@ class _ListMoviesState extends State<ListMovies> {
           }
         },
       ),
+    );
+  }
+
+  Widget _buildAlertDialog() {
+    return AlertDialog(
+      title: Text("Mensaje del sistema"),
+      content: Text("Deseas eliminar el registro? "),
+      actions: [
+        TextButton(
+          onPressed: () {},
+          child: Text("Aceptar", style: TextStyle(color: Colors.black)),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text("Cancelar", style: TextStyle(color: Colors.black)),
+        ),
+      ],
     );
   }
 }
