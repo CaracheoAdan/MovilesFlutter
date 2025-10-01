@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movilesejmplo1/database/movies_databases.dart';
+import 'package:movilesejmplo1/models/movie_dao.dart';
 
 class AddMovieScreen extends StatefulWidget {
   const AddMovieScreen({super.key});
@@ -23,6 +24,15 @@ class _AddMovieScreenState extends State<AddMovieScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+      MovieDao? obj;
+    if (ModalRoute.of(context)!.settings.arguments as MovieDao != null){
+       obj = ModalRoute.of(context)!.settings.arguments as MovieDao; ///Extrae argumentos que se envian por parametro en la llamada por la pantalla a una ruta nombrada
+       conTitle.text = obj.nameMovie!;
+       conTime.text = obj.time!;
+       conRelease.text = obj.dateRelease!;
+    }
+
     conRelease.text = selectedDate.toLocal().toString().split(' ')[0];
 
     final txtTitle = TextFormField(
@@ -43,6 +53,7 @@ class _AddMovieScreenState extends State<AddMovieScreen> {
 
     final btnGuardar = ElevatedButton(
       onPressed: () {
+        if(obj ==null){
         moviesDb!
             .INSERT("tblMovies", {
               "nameMovie": conTitle.text,
@@ -50,6 +61,15 @@ class _AddMovieScreenState extends State<AddMovieScreen> {
               "releaseDate": conRelease.text,
             })
             .then((value) => Navigator.pop(context));
+            }
+            else{
+              moviesDb!.UPDATE("tblMovies", {
+                "idMovie": obj.idMovie,
+                "nameMovie": conTitle.text,
+                "time": conTime.text,
+                "dataRelease":  conRelease.text
+              }).then((value) => Navigator.pop(context),);
+            }
       },
       child: Text("Guardar"),
     );

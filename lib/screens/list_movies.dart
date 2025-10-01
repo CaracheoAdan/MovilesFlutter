@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movilesejmplo1/database/movies_databases.dart';
+import 'package:movilesejmplo1/models/movie_dao.dart';
 
 class ListMovies extends StatefulWidget {
   const ListMovies({super.key});
@@ -57,7 +58,7 @@ class _ListMoviesState extends State<ListMovies> {
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   IconButton(
-                                    onPressed: () => Navigator.pushNamed(context, "/add",arguments: obj), //arguments: obj manda los parametros entre pantallas
+                                    onPressed: () => Navigator.pushNamed(context, "/add",arguments: obj).then((value) => setState(() {}),), //arguments: obj manda los parametros entre pantallas
                                     icon: Icon(Icons.edit_sharp),
                                   ),
                                   // Expanded(child: Container()),
