@@ -11,6 +11,8 @@ class FireAuth {
       UserCredential result = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
       User? user = result.user;
+      user!.sendEmailVerification(); //envia correo de verificacion
+      
       return user;
     } catch (e) {
       print(e.toString());
