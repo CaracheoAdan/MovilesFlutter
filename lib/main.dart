@@ -1,4 +1,6 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:movilesejmplo1/firebase_options.dart';
 import 'package:movilesejmplo1/screens/add_movie_screen.dart';
 import 'package:movilesejmplo1/screens/challenge_screen.dart';
 import 'package:movilesejmplo1/screens/challengefigma_screen.dart';
@@ -13,7 +15,13 @@ import 'package:movilesejmplo1/utils/value_listener.dart';
 import 'package:movilesejmplo1/screens/list_movies.dart';
 
 void main() {
+  {
+  WidgetsFlutterBinding.ensureInitialized();  
+  Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
+  }
 }
 
 class MyApp extends StatelessWidget {
