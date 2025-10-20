@@ -5,6 +5,7 @@ import 'package:movilesejmplo1/screens/add_movie_screen.dart';
 import 'package:movilesejmplo1/screens/challenge_screen.dart';
 import 'package:movilesejmplo1/screens/challengefigma_screen.dart';
 import 'package:movilesejmplo1/screens/home_screen.dart';
+import 'package:movilesejmplo1/screens/list_songs.dart';
 import 'package:movilesejmplo1/screens/login_screen.dart';
 import 'package:movilesejmplo1/screens/mealfigma_screen.dart';
 import 'package:movilesejmplo1/screens/playfigma_screen.dart';
@@ -14,10 +15,10 @@ import 'package:movilesejmplo1/utils/theme_app.dart';
 import 'package:movilesejmplo1/utils/value_listener.dart';
 import 'package:movilesejmplo1/screens/list_movies.dart';
 
-void main() {
+void main() async {
   {
   WidgetsFlutterBinding.ensureInitialized();  
-  Firebase.initializeApp(
+  await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(const MyApp());
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
             '/Playfigma': (context) => const PlayfigmaScreen(),
             '/Playfigmadetails': (context) => const PlayfigmadetailsScreen(),
             '/add': (context) => const AddMovieScreen(),
+            '/miusiclist': (context) => const ListSongs(),
           }, 
           title: 'Material App',
           home: LoginScreen(),

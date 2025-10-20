@@ -5,6 +5,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:lottie/lottie.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/services.dart';
+import 'package:movilesejmplo1/firebase/fire_auth.dart';
+
+
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -14,6 +17,12 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+FireAuth? fireAuth;
+  @override
+void initState() {
+  super.initState();
+  fireAuth = FireAuth();
+}
   // Soporte de cámara  
   final canUseCamera = !kIsWeb &&
       (defaultTargetPlatform == TargetPlatform.android ||
@@ -193,32 +202,52 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: isValidating
-                              ? null
-                              : () {
-                                  FocusScope.of(context).unfocus(); // cierra teclado
-                                  if (_formKey.currentState!.validate()) {
-                                    setState(() => isValidating = true);
-                                    Future.delayed(
-                                      const Duration(milliseconds: 3000),
-                                    ).then((_) {
-                                      if (!mounted) return;
-                                      setState(() => isValidating = false);
-                                      Navigator.pushNamed(context, '/login');
-                                    });
+                          onPressed: isValidating 
+                   ? null
+                   : () {
+                              if (_formKey.currentState?.validate() ?? false) {
+                                if (_avatar == null) {
+                                  final snackBar = SnackBar(
+                                    content: const Text('El avatar es obligatorio'),
+                                    action: SnackBarAction(
+                                      label: 'OK',
+                                      onPressed: () {},
+                                    ),
+                                  );
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(snackBar);
+                                  return;
+                                }
+                                // Aquí se puede registrar
+                                setState(() => isValidating = true);
+                                fireAuth!
+                                    .registerWithEmailAndPassword(
+                                      conUser.text.trim(),
+                                      conPwd.text.trim(),
+                                    )
+                                    .then((user) {
+                                  String msj;
+                                  if (user != null) {
+                                    msj =
+                                        'Registro exitoso, revise su correo para verificar su cuenta.';
                                   } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content:
-                                            Text('Corrige los campos marcados'),
-                                      ),
-                                    );
+                                    msj = 'Error al registrar, intente de nuevo.';
                                   }
-                                },
-                          child: const Text(
-                            "Register",
-                            style: TextStyle(fontSize: 20),
-                          ),
+                                  final snackBar = SnackBar(content: Text(msj));
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(snackBar);
+                                  setState(() => isValidating = false);
+                                  if (user != null) Navigator.pop(context);
+                                });
+                              }
+                            },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            child: Text(
+                              isValidating ? 'Validando...' : 'Registrar',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ),       
                         ),
                       ),
                     ],

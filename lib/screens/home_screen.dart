@@ -78,6 +78,13 @@ class _HomeScreenState extends State<HomeScreen> {
               subtitle:  Text("Challenge Figma"),
               trailing: Icon(Icons.chevron_right),
               onTap: () => Navigator.pushNamed(context, "/challengeFigma")
+            ),
+            ListTile(
+               leading: Image.asset('assets/practica2_icon.png'),
+              title: Text("Music App"),
+              subtitle:  Text("Play Music"),
+              trailing: Icon(Icons.chevron_right),
+              onTap: () => Navigator.pushNamed(context, "/miusiclist")
             )
           ],
         ),

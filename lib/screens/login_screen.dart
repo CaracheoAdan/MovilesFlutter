@@ -1,6 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:movilesejmplo1/firebase/fire_auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -10,30 +10,29 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  FireAuth? fireAuth;
+  @override
+  void initState() {
+    super.initState();
+    fireAuth = FireAuth();
+  }
 
- TextEditingController conUser = TextEditingController();
+  TextEditingController conUser = TextEditingController();
   TextEditingController conPwd = TextEditingController();
-    bool isValidating = false;
-
+  bool isValidating = false;
 
   @override
   Widget build(BuildContext context) {
-
-
-    final txtUser=TextField(
+    final txtUser = TextField(
       keyboardType: TextInputType.emailAddress,
       controller: conUser,
-      decoration: InputDecoration(
-        hintText: 'Correo Electronico homie'
-      ),
+      decoration: InputDecoration(hintText: 'Correo Electronico homie'),
     );
 
-    final txtPwd=TextField(
+    final txtPwd = TextField(
       obscureText: true,
       controller: conPwd,
-      decoration: InputDecoration(
-        hintText: 'Contraseña'
-      ),
+      decoration: InputDecoration(hintText: 'Contraseña'),
     );
 
     return Scaffold(
@@ -41,64 +40,94 @@ class _LoginScreenState extends State<LoginScreen> {
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
-          image: DecorationImage(
-            fit: BoxFit.cover,
-            image: AssetImage("assets/fondo1.png")
-          )
-        ),  
+            image: DecorationImage(
+                fit: BoxFit.cover, image: AssetImage("assets/fondo1.png"))),
         child: Stack(
           alignment: Alignment.topCenter,
           children: [
             Positioned(
               top: 200,
-              child: Text('Caracheo App',style:  TextStyle(color: const Color.fromARGB(255, 229, 226, 226), fontSize: 35, fontFamily: 'Cholo'),
+              child: Text(
+                'Caracheo App',
+                style: TextStyle(
+                    color: const Color.fromARGB(255, 229, 226, 226),
+                    fontSize: 35,
+                    fontFamily: 'Cholo'),
               ),
             ),
-            Positioned( 
-              bottom: 80,
+            Positioned(
+                bottom: 80,
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 10),
-                  width:  MediaQuery.of(context).size.width,
+                  width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height * .35,
                   decoration: BoxDecoration(
-                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(20)
-                  ),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20)),
                   child: ListView(
                     children: [
                       txtUser,
                       txtPwd,
-                     IconButton(
-                      onPressed: () {
-                        isValidating = true;
-                        setState(() {});
-                        Future.delayed(const Duration(milliseconds: 3000)).then((value) {
-                          Navigator.pushNamed(context, '/home');                          // De esta manera navegas hacia la siguiente pantalla
-                      });
-                      },
-                       icon: Icon(
-                         Icons.login,
-                         size: 40,
-                       ),
-                      ),
                       IconButton(
-                        onPressed: (){
+                         onPressed: () {
                           isValidating = true;
                           setState(() {});
-                          Future.delayed(const Duration(milliseconds: 3000)).then((value){
-                            Navigator.pushNamed(context, '/register');
+                          Future.delayed(const Duration(milliseconds: 3000))
+                              .then((value) {
+                            fireAuth!
+                                .signInWithEmailAndPassword(conUser.text, conPwd.text)
+                                .then((value) {
+                              if (value != null) {
+                                Navigator.pushNamed(context, '/home');
+                              } else {
+                                isValidating = false;
+                                setState(() {});
+                                final snackBar = SnackBar(
+                                    content: Text(
+                                        'No se pudo iniciar sesión'));
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(snackBar);
+                              }
+                            });
                           });
                         },
-                         icon: Icon(
+                        icon: Icon(
                           Icons.book,
-                         size: 40,
-                         )
+                          size: 40,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          isValidating = true;
+                          setState(() {});
+                          Future.delayed(const Duration(milliseconds: 3000))
+                              .then((value) {
+                            fireAuth!
+                                .signInWithEmailAndPassword(conUser.text, conPwd.text)
+                                .then((value) {
+                              if (value != null) {
+                                Navigator.pushNamed(context, '/home');
+                              } else {
+                                isValidating = false;
+                                setState(() {});
+                                final snackBar = SnackBar(
+                                    content: Text(
+                                        'No se pudo registrar el usuario'));
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(snackBar);
+                              }
+                            });
+                          });
+                        },
+                        icon: Icon(
+                          Icons.book,
+                          size: 40,
+                        ),
                       )
                     ],
                   ),
-                )
-            ),
-           Positioned(
+                )),
+            Positioned(
               top: 300,
               child: isValidating
                   ? Lottie.asset("assets/loading2.json", height: 200)
