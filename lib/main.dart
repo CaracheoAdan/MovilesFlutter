@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:movilesejmplo1/firebase_options.dart';
 import 'package:movilesejmplo1/screens/add_movie_screen.dart';
+import 'package:movilesejmplo1/screens/add_song_screen.dart';
 import 'package:movilesejmplo1/screens/challenge_screen.dart';
 import 'package:movilesejmplo1/screens/challengefigma_screen.dart';
 import 'package:movilesejmplo1/screens/home_screen.dart';
@@ -47,6 +48,7 @@ class MyApp extends StatelessWidget {
             '/Playfigmadetails': (context) => const PlayfigmadetailsScreen(),
             '/add': (context) => const AddMovieScreen(),
             '/miusiclist': (context) => const ListSongs(),
+            '/addsong': (context) => const AddSongScreen(),
           }, 
           title: 'Material App',
           home: LoginScreen(),
