@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:movilesejmplo1/firebase/songs_firebase.dart';
+// Ajusta la ruta si tu archivo está en otro folder:
+import 'package:movilesejmplo1/widgets/song_widget.dart';
 
 class ListSongs extends StatefulWidget {
   const ListSongs({super.key});
@@ -17,7 +19,7 @@ class _ListSongsState extends State<ListSongs> {
       appBar: AppBar(
         title: const Text('Canciones'),
         actions: const [
-          _AddSongLogoButton(), // ← logo en la esquina
+          _AddSongLogoButton(),
         ],
       ),
       body: StreamBuilder(
@@ -47,19 +49,14 @@ class _ListSongsState extends State<ListSongs> {
                 final doc = docs[index];
                 final data = (doc.data() as Map<String, dynamic>? ) ?? {};
 
-                final title =
-                    (data['title'] ?? data['tittle'] ?? '(sin título)') as String;
-                final lyrics = (data['lyrics'] as String?) ?? '';
-                final cover  = (data['cover']  as String?) ?? '';
+                // Normaliza el campo por si existe 'tittle'
+                if (!data.containsKey('title') && data.containsKey('tittle')) {
+                  data['title'] = data['tittle'];
+                }
+                // Pasa también el id del doc si te sirve en acciones
+                data['__id'] = doc.id;
 
-                return _SongCard(
-                  title: title,
-                  lyrics: lyrics,
-                  coverUrl: cover,
-                  onTap: () {
-                    // Navigator.pushNamed(context, '/songDetails', arguments: doc.id);
-                  },
-                );
+                return SongWidget(data);
               },
             ),
           );
@@ -95,126 +92,11 @@ class _AddSongLogoButton extends StatelessWidget {
 class _LogoImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // Si el asset no existe, muestra un ícono de respaldo
     return Image.asset(
       'assets/logo.png',
       fit: BoxFit.cover,
       errorBuilder: (_, __, ___) =>
           const Center(child: Icon(Icons.library_music)),
-    );
-  }
-}
-
-class _SongCard extends StatelessWidget {
-  const _SongCard({
-    required this.title,
-    required this.lyrics,
-    required this.coverUrl,
-    this.onTap,
-  });
-
-  final String title;
-  final String lyrics;
-  final String coverUrl;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-      child: InkWell(
-        onTap: onTap,
-        child: SizedBox(
-          height: 96,
-          child: Row(
-            children: [
-              _CoverThumb(url: coverUrl),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        lyrics,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(color: Theme.of(context).hintColor),
-                      ),
-                      const Spacer(),
-                      Row(
-                        children: [
-                          IconButton(
-                            onPressed: () {},
-                            icon: const Icon(Icons.play_arrow),
-                            tooltip: 'Reproducir',
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
-                          ),
-                          const SizedBox(width: 8),
-                          IconButton(
-                            onPressed: () {},
-                            icon: const Icon(Icons.more_vert),
-                            tooltip: 'Más opciones',
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _CoverThumb extends StatelessWidget {
-  const _CoverThumb({required this.url});
-  final String url;
-
-  @override
-  Widget build(BuildContext context) {
-    const double side = 96;
-
-    if (url.isEmpty) {
-      return Container(
-        width: side,
-        height: side,
-        color: Colors.black12,
-        child: const Icon(Icons.music_note, size: 32),
-      );
-    }
-
-    return SizedBox(
-      width: side,
-      height: side,
-      child: Image.network(
-        url,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => Container(
-          color: Colors.black12,
-          child: const Icon(Icons.broken_image),
-        ),
-      ),
     );
   }
 }
