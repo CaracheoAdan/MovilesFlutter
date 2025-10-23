@@ -3,15 +3,23 @@ import 'package:flutter/material.dart';
 import 'package:movilesejmplo1/firebase_options.dart';
 import 'package:movilesejmplo1/screens/add_movie_screen.dart';
 import 'package:movilesejmplo1/screens/add_song_screen.dart';
+import 'package:movilesejmplo1/screens/cart_item_form_screen.dart';
+import 'package:movilesejmplo1/screens/cart_screen.dart';
 import 'package:movilesejmplo1/screens/challenge_screen.dart';
 import 'package:movilesejmplo1/screens/challengefigma_screen.dart';
+import 'package:movilesejmplo1/screens/drink_form_screen.dart';
+import 'package:movilesejmplo1/screens/drinks_list_screen.dart';
 import 'package:movilesejmplo1/screens/home_screen.dart';
 import 'package:movilesejmplo1/screens/list_songs.dart';
 import 'package:movilesejmplo1/screens/login_screen.dart';
 import 'package:movilesejmplo1/screens/mealfigma_screen.dart';
 import 'package:movilesejmplo1/screens/playfigma_screen.dart';
 import 'package:movilesejmplo1/screens/playfigmadetails_screen.dart';
+import 'package:movilesejmplo1/screens/product_form_screen.dart';
+import 'package:movilesejmplo1/screens/products_list_screen.dart';
 import 'package:movilesejmplo1/screens/register_screen.dart';
+import 'package:movilesejmplo1/screens/sauce_form_screen.dart';
+import 'package:movilesejmplo1/screens/sauces_list_screen.dart';
 import 'package:movilesejmplo1/utils/theme_app.dart';
 import 'package:movilesejmplo1/utils/value_listener.dart';
 import 'package:movilesejmplo1/screens/list_movies.dart';
@@ -49,10 +57,18 @@ class MyApp extends StatelessWidget {
             '/add': (context) => const AddMovieScreen(),
             '/miusiclist': (context) => const ListSongs(),
             '/addsong': (context) => const AddSongScreen(),
-          }, 
+            '/formProduct': (_) => const ProductFormScreen(),
+            '/formSauce': (_) => const SauceFormScreen(),
+            '/formDrink': (_) => const DrinkFormScreen(),
+            '/formCartItem': (_) => const CartItemFormScreen(),
+            '/listProducts':  (_) => const ProductsListScreen(),
+            '/listSauces':    (_) => const SaucesListScreen(),
+            '/listDrinks':    (_) => const DrinksListScreen(),
+            '/cart': (_) => const CartScreen(),
+          },
           title: 'Material App',
           home: LoginScreen(),
-        );
+        ); 
       }
     );
   }
