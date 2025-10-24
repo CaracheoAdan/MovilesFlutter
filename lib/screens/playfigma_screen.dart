@@ -1,264 +1,379 @@
 import 'package:flutter/material.dart';
+import 'package:movilesejmplo1/database/food_database.dart';
+import 'package:movilesejmplo1/models/product_dao.dart';
+import 'package:movilesejmplo1/models/sauce_dao.dart';
+import 'package:movilesejmplo1/models/drink_dao.dart';
 
 class PlayfigmaScreen extends StatefulWidget {
   const PlayfigmaScreen({super.key});
-
   @override
   State<PlayfigmaScreen> createState() => _PlayfigmaScreenState();
 }
 
 class _PlayfigmaScreenState extends State<PlayfigmaScreen> {
-  double _knob = 0.5;
+  final db = FoodDatabase();
 
-  final Color _psBlue = const Color(0xFF3B82F6);
-  final Color _pageBg = const Color(0xFFF2F5FA);
-  final Color _header = const Color(0xFF10161F);
+  // Paleta
+  final Color _brand = const Color(0xFF2563EB);     // azul
+  final Color _pageBg = const Color(0xFFF7F7F9);    // gris muy claro
+  final Color _ink = const Color(0xFF0F172A);       // texto oscuro
+  final Color _inkSoft = const Color(0xFF475569);   // texto gris
+  final Color _header = const Color(0xFF0B1220);    // header oscuro
+  final Color _headerBtn = const Color(0xFF1B2230); // botón en header
 
-  void _goToDetails() => Navigator.pushNamed(context, '/Playfigmadetails');
+  ProductDao? _product;
+  List<SauceDao> _sauces = [];
+  List<DrinkDao> _drinks = [];
+  int _selectedSauce = -1; // -1 = ninguna
+  DrinkDao? _selectedDrink;
+  int _qty = 1;
+  bool _loading = true;
+
+  int _cartCount = 0;
+
+  String _money(int cents) => 'R${(cents / 100).toStringAsFixed(2)}';
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_loading) _load();
+  }
+
+  Future<void> _load() async {
+    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final id = args?['idProduct'] as int?;
+
+    final products = await db.selectProducts();
+    final sauces   = await db.selectSauces();
+    final drinks   = await db.selectDrinks();
+
+    ProductDao? p;
+    if (id != null) {
+      p = products.firstWhere((e) => e.idProduct == id, orElse: () => ProductDao());
+    } else {
+      p = products.isNotEmpty ? products.first : null;
+    }
+
+    final cartItems = await db.selectCart();
+    if (!mounted) return;
+    setState(() {
+      _product = p;
+      _sauces = sauces;
+      _drinks = drinks;
+      _selectedSauce = -1;
+      _selectedDrink = null;
+      _qty = 1;
+      _cartCount = cartItems.fold<int>(0, (s, e) => s + (e.qty ?? 0));
+      _loading = false;
+    });
+  }
+
+  Future<void> _addToCart() async {
+    if (_product?.idProduct == null) return;
+    final idSauce = _selectedSauce >= 0 ? _sauces[_selectedSauce].idSauce : null;
+    final idDrink = _selectedDrink?.idDrink;
+    await db.cartAdd(
+      idProduct: _product!.idProduct!,
+      qty: _qty,
+      idSauce: idSauce,
+      idDrink: idDrink,
+    );
+    if (!mounted) return;
+    setState(() => _cartCount += _qty);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Agregado: ${_product!.name} x$_qty')),
+    );
+  }
+
+  ImageProvider _imageFor(ProductDao? p) {
+    final img = p?.image ?? '';
+    if (img.startsWith('http')) return NetworkImage(img);
+    if (img.isNotEmpty) return AssetImage(img);
+    return const NetworkImage('https://picsum.photos/seed/product/400/300');
+  }
+
+  int get _selectedSauceExtra => _selectedSauce >= 0 ? (_sauces[_selectedSauce].extra ?? 0) : 0;
+  int get _selectedDrinkPrice => _selectedDrink?.price ?? 0;
+  int get _basePrice => _product?.price ?? 0;
+  int get _lineTotal => (_basePrice + _selectedSauceExtra + _selectedDrinkPrice) * _qty;
+
+  // Chip consistente para salsa/bebida
+  Widget _chip({
+    required String label,
+    required bool selected,
+    required VoidCallback onTap,
+  }) {
+    return ChoiceChip(
+      label: Text(
+        label,
+        style: TextStyle(
+          color: selected ? Colors.white : _ink,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+      selected: selected,
+      onSelected: (_) => onTap(),
+      showCheckmark: false,
+      backgroundColor: Colors.white,
+      selectedColor: _brand,
+      side: BorderSide(
+        color: selected ? _brand : _inkSoft.withOpacity(.25),
+      ),
+      labelPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      shape: const StadiumBorder(),
+    );
+  }
+
+  // Botón “redondo” del header
+  Widget _headerIcon(IconData icon, VoidCallback onTap) {
+    return Container(
+      width: 42,
+      height: 42,
+      decoration: BoxDecoration(
+        color: _headerBtn,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: IconButton(
+        icon: Icon(icon, color: Colors.white),
+        onPressed: onTap,
+        tooltip: '',
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    final String asset = (args?['asset'] as String?) ?? 'assets/dualsense.png';
-    final String? name = args?['name'] as String?;
-    final String? cat = args?['cat'] as String?;
-
     return Scaffold(
-      backgroundColor: _psBlue,
+      backgroundColor: _brand,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(28),
-            child: Container(
-              color: _pageBg,
-              child: Column(
-                children: [
-                  Container(
-                    height: 86,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    decoration: BoxDecoration(
-                      color: _header,
-                      borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(26),
-                        bottomRight: Radius.circular(26),
-                      ),
-                    ),
-                    child: Row(
+        child: _loading
+            ? const Center(child: CircularProgressIndicator(color: Colors.white))
+            : Padding(
+                padding: const EdgeInsets.all(10),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(28),
+                  child: Container(
+                    color: _pageBg,
+                    child: Column(
                       children: [
+                        // Header
                         Container(
-                          width: 42,
-                          height: 42,
+                          height: 86,
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF1B2230),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: IconButton(
-                            icon: const Icon(Icons.menu, color: Colors.white),
-                            onPressed: _goToDetails,
-                          ),
-                        ),
-                        const SizedBox(width: 14),
-                        const Icon(Icons.sports_esports, color: Colors.white, size: 22),
-                        const SizedBox(width: 6),
-                        Text(
-                          name == null ? 'PS5' : 'PS5 • ${name.split('\n').first}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 18,
-                            letterSpacing: 1.2,
-                          ),
-                        ),
-                        const Spacer(),
-                        const Icon(Icons.search, color: Colors.white),
-                      ],
-                    ),
-                  ),
-
-                  Expanded(
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Positioned.fill(
-                          child: IgnorePointer(
-                            child: Center(child: _OutlineTitle()),
-                          ),
-                        ),
-
-                        Positioned(
-                          top: 36,
-                          left: 0,
-                          right: 0,
-                          child: GestureDetector(
-                            onTap: _goToDetails,
-                            child: Image.asset(
-                              asset,
-                              height: 200,
-                              fit: BoxFit.contain,
+                            color: _header,
+                            borderRadius: const BorderRadius.only(
+                              bottomLeft: Radius.circular(26),
+                              bottomRight: Radius.circular(26),
                             ),
                           ),
-                        ),
+                          child: Row(
+                            children: [
+                              _headerIcon(Icons.arrow_back, () => Navigator.maybePop(context)),
+                              const SizedBox(width: 10),
 
-                        Positioned(
-                          bottom: 84,
-                          child: _OvalKnob(
-                            width: 230,
-                            border: _psBlue.withOpacity(.6),
-                            knob: _knob,
-                            onChanged: (v) => setState(() => _knob = v),
+                              // **** BOTÓN CALENDARIO (visible y con mismo estilo) ****
+                              _headerIcon(
+                                Icons.calendar_month,
+                                () => Navigator.pushNamed(context, '/ordersCalendar'),
+                              ),
+                              const SizedBox(width: 14),
+
+                              const Icon(Icons.storefront, color: Colors.white, size: 22),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  _product?.name ?? 'Producto',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 20,
+                                  ),
+                                ),
+                              ),
+
+                              // Carrito
+                              Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.shopping_cart_outlined, color: Colors.white),
+                                    onPressed: () async {
+                                      await Navigator.pushNamed(context, '/cart');
+                                      final items = await db.selectCart();
+                                      if (!mounted) return;
+                                      setState(() => _cartCount = items.fold<int>(0, (s, e) => s + (e.qty ?? 0)));
+                                    },
+                                  ),
+                                  if (_cartCount > 0)
+                                    Positioned(
+                                      right: 2,
+                                      top: 2,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: Colors.red,
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        child: Text(
+                                          '$_cartCount',
+                                          style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700),
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
 
-                        Positioned(
-                          bottom: 16,
-                          left: 16,
-                          right: 16,
-                          child: Row(
-                            children: const [
-                              Expanded(child: _FeatureCard(icon: Icons.mic_none_rounded, title: 'Built-In', subtitle: 'Microphone')),
-                              SizedBox(width: 12),
-                              Expanded(child: _FeatureCard(icon: Icons.headset_rounded, title: 'Headset', subtitle: 'Jack')),
-                              SizedBox(width: 12),
-                              Expanded(child: _FeatureCard(icon: Icons.sensors_rounded, title: 'Motion', subtitle: 'Sensor')),
+                        Expanded(
+                          child: ListView(
+                            padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+                            children: [
+                              // Imagen
+                              AspectRatio(
+                                aspectRatio: 1.4,
+                                child: Center(
+                                  child: Image(image: _imageFor(_product), fit: BoxFit.contain),
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+
+                              Text(
+                                _product?.description?.trim().isNotEmpty == true
+                                    ? _product!.description!
+                                    : 'Sin descripción',
+                                style: TextStyle(color: _ink, fontSize: 14, height: 1.3),
+                              ),
+                              const SizedBox(height: 8),
+
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text('Precio base', style: TextStyle(color: _inkSoft, fontWeight: FontWeight.w700)),
+                                  Text(_money(_basePrice), style: TextStyle(color: _ink, fontWeight: FontWeight.w900)),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+
+                              Text('Salsa', style: TextStyle(color: _ink, fontWeight: FontWeight.w800)),
+                              const SizedBox(height: 8),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: -6,
+                                children: [
+                                  _chip(
+                                    label: 'Ninguna',
+                                    selected: _selectedSauce == -1,
+                                    onTap: () => setState(() => _selectedSauce = -1),
+                                  ),
+                                  ...List.generate(_sauces.length, (i) {
+                                    final s = _sauces[i];
+                                    final label = (s.extra ?? 0) == 0
+                                        ? (s.name ?? 'Sauce')
+                                        : '${s.name} (+${_money(s.extra ?? 0)})';
+                                    return _chip(
+                                      label: label,
+                                      selected: _selectedSauce == i,
+                                      onTap: () => setState(() => _selectedSauce = i),
+                                    );
+                                  }),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+
+                              Text('Bebida', style: TextStyle(color: _ink, fontWeight: FontWeight.w800)),
+                              const SizedBox(height: 8),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: -6,
+                                children: [
+                                  _chip(
+                                    label: 'Ninguna',
+                                    selected: _selectedDrink == null,
+                                    onTap: () => setState(() => _selectedDrink = null),
+                                  ),
+                                  ..._drinks.map((d) {
+                                    final lbl = '${d.name ?? ''} ${d.size ?? ''} (+${_money(d.price ?? 0)})';
+                                    final sel = _selectedDrink?.idDrink == d.idDrink;
+                                    return _chip(
+                                      label: lbl,
+                                      selected: sel,
+                                      onTap: () => setState(() => _selectedDrink = d),
+                                    );
+                                  }),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+
+                              Row(
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(12),
+                                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(.06), blurRadius: 8, offset: const Offset(0, 4))],
+                                    ),
+                                    padding: const EdgeInsets.symmetric(horizontal: 6),
+                                    child: Row(
+                                      children: [
+                                        IconButton(
+                                          onPressed: () => setState(() => _qty = (_qty - 1).clamp(1, 99).toInt()),
+                                          icon: const Icon(Icons.remove),
+                                        ),
+                                        Text('$_qty', style: TextStyle(color: _ink, fontSize: 16, fontWeight: FontWeight.w800)),
+                                        IconButton(
+                                          onPressed: () => setState(() => _qty = (_qty + 1).clamp(1, 99).toInt()),
+                                          icon: const Icon(Icons.add),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text('Total', style: TextStyle(color: _inkSoft, fontWeight: FontWeight.w700)),
+                                      Text(_money(_lineTotal),
+                                          style: TextStyle(color: _ink, fontWeight: FontWeight.w900, fontSize: 18)),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+
+                              SizedBox(
+                                width: double.infinity,
+                                height: 52,
+                                child: ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: _brand,
+                                    shape: const StadiumBorder(),
+                                    elevation: 0,
+                                  ),
+                                  onPressed: _addToCart,
+                                  icon: const Icon(Icons.add_shopping_cart),
+                                  label: const Text('Agregar al carrito',
+                                      style: TextStyle(fontWeight: FontWeight.w800, color: Colors.white)),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              TextButton.icon(
+                                onPressed: () => Navigator.pushNamed(context, '/Playfigmadetails'),
+                                icon: Icon(Icons.grid_view_rounded, color: _inkSoft),
+                                label: Text('Ver catálogo', style: TextStyle(color: _inkSoft, fontWeight: FontWeight.w700)),
+                              ),
                             ],
                           ),
                         ),
                       ],
                     ),
                   ),
-
-                  // CTA
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 58,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: _psBlue,
-                          shape: const StadiumBorder(),
-                          elevation: 0,
-                        ),
-                        onPressed: _goToDetails,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
-                              child: const Text('\$70', style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w800)),
-                            ),
-                            const SizedBox(width: 12),
-                            const Text('Buy Now',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white)),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _OutlineTitle extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final stroke = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.6
-      ..color = Colors.black12;
-    return Text(
-      'DUAL\nSENSE',
-      textAlign: TextAlign.center,
-      style: TextStyle(
-        fontSize: 64,
-        height: 0.9,
-        letterSpacing: 3,
-        fontWeight: FontWeight.w900,
-        foreground: stroke,
-      ),
-    );
-  }
-}
-
-class _OvalKnob extends StatelessWidget {
-  final double width;
-  final Color border;
-  final double knob; // 0.0 - 1.0
-  final ValueChanged<double> onChanged;
-
-  const _OvalKnob({required this.width, required this.border, required this.knob, required this.onChanged});
-
-  @override
-  Widget build(BuildContext context) {
-    const double height = 64;
-    const double knobSize = 16;
-
-    return SizedBox(
-      width: width,
-      height: height,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onHorizontalDragUpdate: (d) {
-          final box = context.findRenderObject() as RenderBox;
-          final local = box.globalToLocal(d.globalPosition);
-          double v = (local.dx - knobSize / 2) / (width - knobSize);
-          v = v.clamp(0.0, 1.0);
-          onChanged(v);
-        },
-        child: Stack(
-          children: [
-            Container(
-              width: width,
-              height: height,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(100),
-                border: Border.all(color: border, width: 1.4),
-              ),
-            ),
-            Positioned(
-              left: (width - knobSize) * knob,
-              top: (height - knobSize) / 2,
-              child: Container(width: knobSize, height: knobSize, decoration: BoxDecoration(color: border, shape: BoxShape.circle)),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _FeatureCard extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  const _FeatureCard({required this.icon, required this.title, required this.subtitle});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 84,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(.08), blurRadius: 12, offset: const Offset(0, 6))],
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: Colors.black87, size: 22),
-          const SizedBox(height: 6),
-          Text(title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12)),
-          Text(subtitle, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 11, color: Colors.black54)),
-        ],
       ),
     );
   }

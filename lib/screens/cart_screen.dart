@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:movilesejmplo1/database/food_database.dart';
-import 'package:movilesejmplo1/models/cart_item_dao.dart';
-import 'package:movilesejmplo1/models/product_dao.dart';
-import 'package:movilesejmplo1/models/sauce_dao.dart';
-import 'package:movilesejmplo1/models/drink_dao.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -13,11 +9,15 @@ class CartScreen extends StatefulWidget {
 
 class _CartScreenState extends State<CartScreen> {
   final db = FoodDatabase();
-  List<CartItemDao> _items = [];
-  Map<int, ProductDao> _products = {};
-  Map<int, SauceDao> _sauces = {};
-  Map<int, DrinkDao> _drinks = {};
+
+  final Color _brand = const Color(0xFFFFB000);
+  final Color _ink = const Color(0xFF0F172A);
+  final Color _inkSoft = const Color(0xFF475569);
+
   bool _loading = true;
+  int _total = 0;
+
+  List<Map<String, dynamic>> _items = [];
 
   String _money(int cents) => 'R${(cents / 100).toStringAsFixed(2)}';
 
@@ -28,186 +28,189 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   Future<void> _load() async {
-    final items  = await db.selectCart();
-    final prods  = await db.selectProducts();
-    final sauces = await db.selectSauces();
-    final drinks = await db.selectDrinks();
+    final con = await db.database;
+    final rows = await con!.rawQuery('''
+      SELECT
+        c.idCartItem,
+        c.qty,
+        c.lineTotal,
+        p.name AS productName,
+        s.name AS sauceName,
+        d.name AS drinkName,
+        d.size AS drinkSize
+      FROM tblCartItem c
+      LEFT JOIN tblProduct p ON p.idProduct = c.idProduct
+      LEFT JOIN tblSauce   s ON s.idSauce   = c.idSauce
+      LEFT JOIN tblDrink   d ON d.idDrink   = c.idDrink
+      ORDER BY c.idCartItem DESC
+    ''');
+
+    final tot = rows.fold<int>(0, (sum, r) => sum + ((r['lineTotal'] as int?) ?? 0));
+
     if (!mounted) return;
     setState(() {
-      _items = items;
-      _products = {for (final p in prods) p.idProduct!: p};
-      _sauces   = {for (final s in sauces) s.idSauce!: s};
-      _drinks   = {for (final d in drinks) d.idDrink!: d};
+      _items = rows.map((e) => Map<String, dynamic>.from(e)).toList();
+      _total = tot;
       _loading = false;
     });
   }
 
-  int get _total => _items.fold(0, (s, e) => s + (e.lineTotal ?? 0));
-
-  Future<void> _changeQty(CartItemDao row, int delta) async {
-    final newQty = ((row.qty ?? 1) + delta).clamp(1, 99);
-    await db.cartUpdateQty(row.idCartItem!, newQty);
+  Future<void> _removeItem(int idCartItem) async {
+    await db.DELETE_BY_ID('tblCartItem', 'idCartItem', idCartItem);
     await _load();
   }
 
-  Future<void> _remove(CartItemDao row) async {
+  Future<void> _clear() async {
     final ok = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Eliminar del carrito'),
-        content: const Text('¿Seguro que quieres eliminar este artículo?'),
+        title: const Text('Vaciar carrito'),
+        content: const Text('¿Seguro que quieres vaciar el carrito?'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancelar')),
-          FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Eliminar')),
+          FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Vaciar')),
         ],
       ),
     );
     if (ok == true) {
-      await db.cartRemove(row.idCartItem!);
+      await db.cartClear();
       await _load();
     }
   }
 
-  Future<void> _placeOrder() async {
+  Future<void> _checkout() async {
     if (_items.isEmpty) return;
-    final id = await db.createOrderFromCart();
+    final idOrder = await db.createOrderFromCart();
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Pedido #$id creado por ${_money(_total)}')),
-    );
-    await _load();
+    if (idOrder > 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Pedido #$idOrder creado')),
+      );
+      await _load();
+    }
   }
+
+  // Chip claro reutilizable (evita los cuadros negros)
+  Widget _lightChip(String text) => Chip(
+        label: Text(text, style: TextStyle(color: _ink)),
+        backgroundColor: Colors.white,
+        side: BorderSide(color: _inkSoft.withOpacity(.2)),
+        shape: const StadiumBorder(),
+        visualDensity: VisualDensity.compact,
+      );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: _brand,
       appBar: AppBar(
-        title: const Text('Tu carrito'),
+        backgroundColor: _brand,
+        elevation: 0,
+        foregroundColor: _ink,
+        title: Text('Tu carrito', style: TextStyle(color: _ink, fontWeight: FontWeight.w800)),
         actions: [
-          if (_items.isNotEmpty)
-            TextButton(
-              onPressed: () async { await db.cartClear(); await _load(); },
-              child: const Text('Vaciar', style: TextStyle(color: Colors.red)),
-            ),
+          TextButton(
+            onPressed: _items.isEmpty ? null : _clear,
+            child: const Text('Vaciar', style: TextStyle(color: Colors.white)),
+          ),
         ],
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _items.isEmpty
-              ? const Center(child: Text('Tu carrito está vacío'))
-              : Column(
-                  children: [
-                    Expanded(
-                      child: RefreshIndicator(
-                        onRefresh: _load,
-                        child: ListView.separated(
-                          padding: const EdgeInsets.all(12),
+          ? const Center(child: CircularProgressIndicator(color: Colors.white))
+          : Column(
+              children: [
+                Expanded(
+                  child: _items.isEmpty
+                      ? Center(
+                          child: Text('No hay artículos en el carrito',
+                              style: TextStyle(color: _ink, fontWeight: FontWeight.w700)),
+                        )
+                      : ListView.separated(
                           itemCount: _items.length,
-                          separatorBuilder: (_, __) => const SizedBox(height: 10),
+                          separatorBuilder: (_, __) => const Divider(height: 1),
                           itemBuilder: (_, i) {
-                            final row = _items[i];
-                            final p = _products[row.idProduct]!;
-                            final s = row.idSauce != null ? _sauces[row.idSauce!] : null;
-                            final d = row.idDrink != null ? _drinks[row.idDrink!] : null;
+                            final it = _items[i];
+                            final idCartItem = (it['idCartItem'] as int?) ?? -1;
+                            final qty = (it['qty'] as int?) ?? 1;
+                            final lineTotal = (it['lineTotal'] as int?) ?? 0;
+                            final product = (it['productName'] as String?) ?? 'Producto';
+                            final sauce = it['sauceName'] as String?;
+                            final drink = it['drinkName'] as String?;
+                            final size = it['drinkSize'] as String?;
 
-                            return Card(
-                              elevation: 1.5,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                              child: Padding(
-                                padding: const EdgeInsets.all(12),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    CircleAvatar(
-                                      radius: 26,
-                                      child: Text((p.name ?? 'P').substring(0,1).toUpperCase()),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(p.name ?? 'Product',
-                                              style: const TextStyle(
-                                                  fontWeight: FontWeight.w700, fontSize: 16)),
-                                          const SizedBox(height: 4),
-                                          Wrap(
-                                            spacing: 8,
-                                            runSpacing: -6,
-                                            children: [
-                                              if (s != null)
-                                                Chip(label: Text('Sauce: ${s.name}'),
-                                                     visualDensity: VisualDensity.compact),
-                                              if (d != null)
-                                                Chip(label: Text('Drink: ${d.name} ${d.size ?? ''}'),
-                                                     visualDensity: VisualDensity.compact),
-                                            ],
-                                          ),
-                                          const SizedBox(height: 6),
-                                          Text('Línea: ${_money(row.lineTotal ?? 0)}',
-                                              style: const TextStyle(fontWeight: FontWeight.w600)),
-                                        ],
-                                      ),
-                                    ),
-                                    Column(
-                                      children: [
-                                        Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            IconButton(
-                                              onPressed: () => _changeQty(row, -1),
-                                              icon: const Icon(Icons.remove_circle_outline),
-                                            ),
-                                            Text('${row.qty ?? 1}',
-                                                style: const TextStyle(fontWeight: FontWeight.bold)),
-                                            IconButton(
-                                              onPressed: () => _changeQty(row, 1),
-                                              icon: const Icon(Icons.add_circle_outline),
-                                            ),
-                                          ],
-                                        ),
-                                        IconButton(
-                                          onPressed: () => _remove(row),
-                                          icon: const Icon(Icons.delete_outline, color: Colors.red),
-                                        ),
-                                      ],
-                                    )
-                                  ],
-                                ),
+                            return ListTile(
+                              isThreeLine: true, // <-- da más alto para evitar overflow
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              title: Text(product, style: TextStyle(color: _ink, fontWeight: FontWeight.w800)),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Cantidad: $qty', style: TextStyle(color: _inkSoft)),
+                                  const SizedBox(height: 6),
+                                  Wrap(
+                                    spacing: 8,
+                                    runSpacing: -6,
+                                    children: [
+                                      if (sauce != null && sauce.isNotEmpty) _lightChip('Salsa: $sauce'),
+                                      if (drink != null && drink.isNotEmpty) _lightChip('Bebida: $drink ${size ?? ''}'),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              trailing: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(_money(lineTotal),
+                                      style: TextStyle(color: _ink, fontWeight: FontWeight.w900)),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete_outline),
+                                    onPressed: () => _removeItem(idCartItem),
+                                    tooltip: 'Eliminar',
+                                  ),
+                                ],
                               ),
                             );
                           },
                         ),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                        boxShadow: [BoxShadow(color: Colors.black.withOpacity(.05), blurRadius: 10, offset: const Offset(0, -2))],
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text('Total', style: TextStyle(fontWeight: FontWeight.w600)),
-                                Text(_money(_total),
-                                    style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 20)),
-                              ],
-                            ),
-                          ),
-                          FilledButton.icon(
-                            onPressed: _placeOrder,
-                            icon: const Icon(Icons.payment),
-                            label: const Text('Finalizar pedido'),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
                 ),
+
+                // Footer total + checkout
+                Container(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(.08), blurRadius: 10, offset: const Offset(0, -4))],
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Total', style: TextStyle(color: _inkSoft, fontWeight: FontWeight.w700)),
+                            Text(_money(_total),
+                                style: TextStyle(color: _ink, fontWeight: FontWeight.w900, fontSize: 20)),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: 48,
+                        child: ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _ink,
+                            foregroundColor: Colors.white,
+                            shape: const StadiumBorder(),
+                          ),
+                          onPressed: _items.isEmpty ? null : _checkout,
+                          icon: const Icon(Icons.receipt_long),
+                          label: const Text('Finalizar pedido'),
+                        ),
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
     );
   }
 }

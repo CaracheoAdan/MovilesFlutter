@@ -26,11 +26,13 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
   List<DrinkDao> _drinks = [];
   DrinkDao? _selectedDrink;
   bool _isLoading = true;
-
   int _cartCount = 0;
 
+  // Colores
   Color get _brandYellow => const Color(0xFFFFB000);
   Color get _tileGray => const Color(0xFFEFEFEF);
+  Color get _ink => const Color(0xFF0F172A);       // texto principal
+  Color get _inkSoft => const Color(0xFF475569);   // texto secundario
 
   @override
   void initState() {
@@ -50,7 +52,7 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
       _drinks   = drinks;
       if (_products.isNotEmpty) _selectedThumb = 0;
       if (_sauces.isNotEmpty) _selectedSauce = 0;
-      _selectedDrink = null; // ninguna bebida por defecto
+      _selectedDrink = null;
       _isLoading = false;
     });
   }
@@ -131,15 +133,6 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
                 await _loadCatalogs();
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.add_shopping_cart),
-              title: const Text('Add Cart Item'),
-              onTap: () async {
-                Navigator.pop(ctx, true);
-                await Navigator.pushNamed(context, '/formCartItem');
-                await _loadCatalogs();
-              },
-            ),
             const SizedBox(height: 8),
           ],
         ),
@@ -149,17 +142,10 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
 
   // Helpers
   String _money(int cents) => 'R${(cents / 100).toStringAsFixed(2)}';
-
-  int get _selectedProductPrice =>
-      _products.isEmpty ? 0 : (_products[_selectedThumb].price ?? 0);
-
-  int get _selectedSauceExtra =>
-      _sauces.isEmpty ? 0 : (_sauces[_selectedSauce].extra ?? 0);
-
-  int get _selectedDrinkPrice => _selectedDrink?.price ?? 0;
-
-  int get _lineTotal =>
-      (_selectedProductPrice + _selectedSauceExtra + _selectedDrinkPrice) * _qty;
+  int get _selectedProductPrice => _products.isEmpty ? 0 : (_products[_selectedThumb].price ?? 0);
+  int get _selectedSauceExtra   => _sauces.isEmpty ? 0 : (_sauces[_selectedSauce].extra ?? 0);
+  int get _selectedDrinkPrice   => _selectedDrink?.price ?? 0;
+  int get _lineTotal => (_selectedProductPrice + _selectedSauceExtra + _selectedDrinkPrice) * _qty;
 
   ImageProvider _imageFor(ProductDao p) {
     final img = p.image ?? '';
@@ -187,6 +173,11 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
     await _loadCartCount();
   }
 
+  // Ir al catálogo PlayfigmaDetails
+  void _goToPlayCatalog() {
+    Navigator.pushNamed(context, '/Playfigmadetails');
+  }
+
   @override
   Widget build(BuildContext context) {
     final loading = _isLoading;
@@ -210,11 +201,24 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: IconButton(
-                          icon: const Icon(Icons.menu),
+                          icon: const Icon(Icons.menu, color: Colors.black),
                           onPressed: () => Navigator.maybePop(context),
                         ),
                       ),
                       const Spacer(),
+                      // Catálogo
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.black,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: IconButton(
+                          icon: const Icon(Icons.sports_esports, color: Colors.white),
+                          tooltip: 'Catálogo',
+                          onPressed: _goToPlayCatalog,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
                       // Carrito con badge
                       Stack(
                         clipBehavior: Clip.none,
@@ -270,10 +274,16 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
                     ],
                   ),
                   const SizedBox(height: 12),
-                  const Center(
+
+                  // Título
+                  Center(
                     child: Text(
                       'Create your kota',
-                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+                      style: TextStyle(
+                        color: _ink,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w900,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -386,19 +396,16 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
                                 children: List.generate(_sauces.length, (i) {
                                   final sauce = _sauces[i];
                                   final selected = _selectedSauce == i;
-                                  final priceLabel = (sauce.extra ?? 0) == 0
-                                      ? 'FREE'
-                                      : '+${_money(sauce.extra ?? 0)}';
+                                  final priceLabel =
+                                      (sauce.extra ?? 0) == 0 ? 'FREE' : '+${_money(sauce.extra ?? 0)}';
                                   return InkWell(
                                     onTap: () => setState(() => _selectedSauce = i),
                                     child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 14, vertical: 14),
+                                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
                                       decoration: BoxDecoration(
                                         color: selected ? _tileGray : Colors.white,
                                         border: Border(
-                                          top: BorderSide(
-                                              color: Colors.grey.shade300, width: 1),
+                                          top: BorderSide(color: Colors.grey.shade300, width: 1),
                                         ),
                                       ),
                                       child: Row(
@@ -407,9 +414,8 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
                                             child: Text(
                                               sauce.name ?? 'Sauce',
                                               style: TextStyle(
-                                                fontWeight: selected
-                                                    ? FontWeight.w700
-                                                    : FontWeight.w500,
+                                                color: _ink,
+                                                fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
                                                 decoration: selected
                                                     ? TextDecoration.underline
                                                     : TextDecoration.none,
@@ -418,8 +424,7 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
                                           ),
                                           Text(
                                             priceLabel,
-                                            style: const TextStyle(
-                                                fontWeight: FontWeight.w700),
+                                            style: TextStyle(color: _ink, fontWeight: FontWeight.w800),
                                           ),
                                         ],
                                       ),
@@ -432,8 +437,8 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
                     const SizedBox(height: 18),
 
                     // BEBIDAS
-                    const Text('Do you want a drink?',
-                        style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+                    Text('Do you want a drink?',
+                        style: TextStyle(color: _ink, fontWeight: FontWeight.w900, fontSize: 16)),
                     const SizedBox(height: 8),
 
                     if (_drinks.isEmpty)
@@ -444,11 +449,11 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
                       )
                     else
                       SizedBox(
-                        height: 84,
+                        height: 96,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
                           itemCount: _drinks.length + 1, // +1 para "None"
-                          separatorBuilder: (_, __) => const SizedBox(width: 8),
+                          separatorBuilder: (_, __) => const SizedBox(width: 12),
                           itemBuilder: (ctx, i) {
                             if (i == 0) {
                               final selected = _selectedDrink == null;
@@ -477,12 +482,9 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Total',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-                        Text(
-                          _money(_lineTotal),
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-                        ),
+                        Text('Total', style: TextStyle(color: _ink, fontSize: 16, fontWeight: FontWeight.w900)),
+                        Text(_money(_lineTotal),
+                            style: TextStyle(color: _ink, fontSize: 16, fontWeight: FontWeight.w900)),
                       ],
                     ),
 
@@ -507,7 +509,7 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
                                 'Checkout',
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontWeight: FontWeight.w700,
+                                  fontWeight: FontWeight.w800,
                                 ),
                               ),
                             ),
@@ -534,15 +536,16 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
                                   _qty = ((_qty - 1).clamp(1, 99)).toInt();
                                 }),
                                 icon: const Icon(Icons.remove),
+                                color: _ink,
                               ),
                               Text('$_qty',
-                                  style: const TextStyle(
-                                      fontSize: 16, fontWeight: FontWeight.w700)),
+                                  style: TextStyle(color: _ink, fontSize: 16, fontWeight: FontWeight.w800)),
                               IconButton(
                                 onPressed: () => setState(() {
                                   _qty = ((_qty + 1).clamp(1, 99)).toInt();
                                 }),
                                 icon: const Icon(Icons.add),
+                                color: _ink,
                               ),
                             ],
                           ),
@@ -571,6 +574,8 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
   }
 }
 
+// ===== Widgets auxiliares =====
+
 class _SectionHeader extends StatelessWidget {
   final String title;
   final Widget? trailing;
@@ -593,11 +598,14 @@ class _SectionHeader extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       child: Row(
         children: [
-          Text(title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-              )),
+          Text(
+            title,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w800,
+              fontSize: 16,
+            ),
+          ),
           const Spacer(),
           if (trailing != null) trailing!,
           const SizedBox(width: 8),
@@ -635,7 +643,7 @@ class _DrinkChip extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Container(
-          width: 160,
+          width: 180,
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
@@ -644,20 +652,25 @@ class _DrinkChip extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: selected ? Colors.white : Colors.black,
-                    fontWeight: FontWeight.w700,
-                  )),
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: selected ? Colors.white : const Color(0xFF0F172A),
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
               const SizedBox(height: 4),
-              Text(sublabel,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: selected ? Colors.white70 : Colors.black54,
-                  )),
+              Text(
+                sublabel,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: selected ? Colors.white70 : const Color(0xFF475569),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ],
           ),
         ),
@@ -670,6 +683,7 @@ class _EmptyInlineButton extends StatelessWidget {
   final String text;
   final VoidCallback onTap;
   const _EmptyInlineButton({required this.text, required this.onTap});
+
   @override
   Widget build(BuildContext context) {
     return OutlinedButton.icon(

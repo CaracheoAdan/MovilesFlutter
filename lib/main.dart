@@ -13,6 +13,7 @@ import 'package:movilesejmplo1/screens/home_screen.dart';
 import 'package:movilesejmplo1/screens/list_songs.dart';
 import 'package:movilesejmplo1/screens/login_screen.dart';
 import 'package:movilesejmplo1/screens/mealfigma_screen.dart';
+import 'package:movilesejmplo1/screens/orders_calendar_screen.dart';
 import 'package:movilesejmplo1/screens/playfigma_screen.dart';
 import 'package:movilesejmplo1/screens/playfigmadetails_screen.dart';
 import 'package:movilesejmplo1/screens/product_form_screen.dart';
@@ -65,6 +66,7 @@ class MyApp extends StatelessWidget {
             '/listSauces':    (_) => const SaucesListScreen(),
             '/listDrinks':    (_) => const DrinksListScreen(),
             '/cart': (_) => const CartScreen(),
+            '/ordersCalendar': (_) => const OrdersCalendarScreen(),
           },
           title: 'Material App',
           home: LoginScreen(),
