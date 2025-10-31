@@ -17,7 +17,6 @@ class _OrdersCalendarScreenState extends State<OrdersCalendarScreen> {
   DateTime _focusedDay = DateTime.now();
   DateTime _selectedDay = DateTime.now();
 
-  // Fecha -> lista de órdenes en esa fecha
   final Map<DateTime, List<OrderDao>> _events = {};
   bool _loading = true;
 
@@ -33,11 +32,10 @@ class _OrdersCalendarScreenState extends State<OrdersCalendarScreen> {
   String _money(int cents) => 'R${(cents / 100).toStringAsFixed(2)}';
 
   Future<void> _loadOrders() async {
-    final orders = await db.selectOrders(); // idOrder, total, createdAt
+    final orders = await db.selectOrders(); 
     _events.clear();
 
     for (final o in orders) {
-      // createdAt viene como 'YYYY-MM-DD HH:mm:ss'
       final str = (o.createdAt ?? '').replaceFirst(' ', 'T');
       DateTime when;
       try {
@@ -118,7 +116,6 @@ class _OrdersCalendarScreenState extends State<OrdersCalendarScreen> {
                       color: Colors.black,
                       shape: BoxShape.circle,
                     ),
-                    // Burbuja con cantidad de eventos
                     markersMaxCount: 3,
                   ),
                   onDaySelected: (selectedDay, focusedDay) {
@@ -132,8 +129,6 @@ class _OrdersCalendarScreenState extends State<OrdersCalendarScreen> {
                 ),
 
                 const SizedBox(height: 8),
-
-                // Resumen del día seleccionado
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Row(
@@ -184,9 +179,7 @@ class _OrdersCalendarScreenState extends State<OrdersCalendarScreen> {
 class _DayOrdersList extends StatelessWidget {
   final List<OrderDao> orders;
   final String Function(int) money;
-
   const _DayOrdersList({required this.orders, required this.money});
-
   @override
   Widget build(BuildContext context) {
     final Color ink = const Color(0xFF0F172A);
@@ -227,8 +220,7 @@ class _DayOrdersList extends StatelessWidget {
             ),
             onTap: () {
               // Si quieres ir a detalle de pedido u orden items,
-              // aquí puedes navegar a una pantalla de detalle.
-              // Navigator.pushNamed(context, '/orderDetail', arguments: o);
+              Navigator.pushNamed(context, '/orderDetail', arguments: o);
             },
           ),
         );
