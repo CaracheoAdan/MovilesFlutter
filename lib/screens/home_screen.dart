@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:dot_navigation_bar/dot_navigation_bar.dart';
 import 'package:movilesejmplo1/screens/challenge_screen.dart';
+import 'package:movilesejmplo1/screens/api_movie_list.dart'; 
 import 'package:movilesejmplo1/utils/value_listener.dart';
 
-enum _SelectedTab { home, favorite, search, profile, home_work}
+enum _SelectedTab { home, favorite, search, profile, home_work }
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -34,8 +35,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final currentIndex = _SelectedTab.values.indexOf(_selectedTab);
+
     return Scaffold(
       appBar: AppBar(
+        title: const Text('Home'),
         actions: [
           ValueListenableBuilder<bool>(
             valueListenable: ValueListener.isDark,
@@ -48,11 +52,11 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-        drawer: Drawer(
+      drawer: Drawer(
         child: ListView(
           children: [
             const UserAccountsDrawerHeader(
-              accountName: Text('Campos Caracheo Adan Javier'), 
+              accountName: Text('Campos Caracheo Adan Javier'),
               accountEmail: Text('21031400@itcelaya.edu.mc'),
               currentAccountPicture: CircleAvatar(
                 backgroundImage: NetworkImage('https://i.pravatar.cc/300'),
@@ -60,73 +64,93 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             ListTile(
               leading: Image.asset('assets/IconElegant.png'),
-              title: Text('List Movies'),
-              subtitle: Text('Database Movies'),
-              trailing: Icon(Icons.chevron_right),
-              onTap: () => Navigator.pushNamed(context,"/listdb"),
+              title: const Text('List Movies'),
+              subtitle: const Text('Database Movies'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                Navigator.pop(context);
+                setState(() => _selectedTab = _SelectedTab.home);
+              },
             ),
             ListTile(
               leading: Image.asset('assets/practica1_icon.png'),
-              title: Text("Practica 1"),
-              subtitle:  Text("Challenge Flutter"),
-              trailing: Icon(Icons.chevron_right),
-              onTap: () => Navigator.pushNamed(context, "/challenge")
+              title: const Text("Practica 1"),
+              subtitle: const Text("Challenge Flutter"),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.pushNamed(context, "/challenge"),
             ),
             ListTile(
-               leading: Image.asset('assets/practica2_icon.png'),
-              title: Text("Practica3"),
-              subtitle:  Text("Challenge Figma"),
-              trailing: Icon(Icons.chevron_right),
-              onTap: () => Navigator.pushNamed(context, "/challengeFigma")
+              leading: Image.asset('assets/practica2_icon.png'),
+              title: const Text("Practica3"),
+              subtitle: const Text("Challenge Figma"),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.pushNamed(context, "/challengeFigma"),
             ),
             ListTile(
-               leading: Image.asset('assets/practica2_icon.png'),
-              title: Text("Music App"),
-              subtitle:  Text("Play Music"),
-              trailing: Icon(Icons.chevron_right),
-              onTap: () => Navigator.pushNamed(context, "/miusiclist")
-            )
+              leading: Image.asset('assets/practica2_icon.png'),
+              title: const Text("Music App"),
+              subtitle: const Text("Play Music"),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.pushNamed(context, "/miusiclist"),
+            ),
           ],
         ),
       ),
-      body: Stack(
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 250),
+        child: IndexedStack(
+          key: ValueKey(currentIndex),
+          index: currentIndex,
+          children: [
+            ApiMoviesList(),
+            const Center(child: Text('Favorites (pendiente)')),
+            const Center(child: Text('Search (pendiente)')),
+            const Center(child: Text('Profile (pendiente)')),
+            const Center(child: Text('Challenge (abre con el 5° ícono)')),
+          ],
+        ),
       ),
+
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(bottom: 10),
         child: DotNavigationBar(
           margin: const EdgeInsets.symmetric(horizontal: 10),
-          currentIndex: _SelectedTab.values.indexOf(_selectedTab),
+          currentIndex: currentIndex,
           dotIndicatorColor: Colors.white,
           unselectedItemColor: Colors.grey[300],
           splashBorderRadius: 50,
           onTap: (index) {
-            if (index == 4) { 
+            if (index == 4) {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => ChallengeScreen()),
+                MaterialPageRoute(builder: (_) => const ChallengeScreen()),
               );
-            }else {
-              setState(() {
-                _selectedTab = _SelectedTab.values[index];
-              });
+            } else {
+              _handleIndexChanged(index);
             }
           },
-          items:  [
-            DotNavigationBarItem(icon: Icon(Icons.home),
-             selectedColor: Color.fromARGB(255, 94, 238, 190)
-             ),
-            DotNavigationBarItem(icon: Icon(Icons.favorite),
-             selectedColor: Color.fromARGB(255, 19, 158, 61))
-             ,
-            DotNavigationBarItem(icon: Icon(Icons.search),
-             selectedColor: Color.fromARGB(255, 111, 163, 231)
-             ),
-            DotNavigationBarItem(icon: Icon(Icons.person),
-             selectedColor: Color.fromARGB(255, 230, 227, 72)
-             ),
-            DotNavigationBarItem(icon: Icon(Icons.home_work),
-             selectedColor: Color.fromARGB(1, 88, 185, 64)
-             ),
+          // OJO: sin "const" en la lista de items
+          items: [
+            DotNavigationBarItem(
+              icon: const Icon(Icons.home),
+              selectedColor: const Color.fromARGB(255, 94, 238, 190),
+            ),
+            DotNavigationBarItem(
+              icon: const Icon(Icons.favorite),
+              selectedColor: const Color.fromARGB(255, 19, 158, 61),
+            ),
+            DotNavigationBarItem(
+              icon: const Icon(Icons.search),
+              selectedColor: const Color.fromARGB(255, 111, 163, 231),
+            ),
+            DotNavigationBarItem(
+              icon: const Icon(Icons.person),
+              selectedColor: const Color.fromARGB(255, 230, 227, 72),
+            ),
+            DotNavigationBarItem(
+              icon: const Icon(Icons.home_work),
+              selectedColor: const Color.fromARGB(255, 88, 185, 64),
+            ),
           ],
         ),
       ),

@@ -168,7 +168,6 @@ class _ChallengefigmaScreenState extends State<ChallengefigmaScreen> {
             ),
           ),
 
-          // Cuerpo
           SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 18),
             child: Column(
@@ -184,7 +183,6 @@ class _ChallengefigmaScreenState extends State<ChallengefigmaScreen> {
                 ),
                 const SizedBox(height: 22),
 
-                // ---------- FORM ----------
                 Form(
                   key: _formKey,
                   child: Column(
@@ -225,7 +223,6 @@ class _ChallengefigmaScreenState extends State<ChallengefigmaScreen> {
                 ),
                 const SizedBox(height: 10),
 
-                // Botón principal
                 SizedBox(
                   width: double.infinity,
                   height: 44,
@@ -259,7 +256,6 @@ class _ChallengefigmaScreenState extends State<ChallengefigmaScreen> {
 
                 const SizedBox(height: 18),
 
-                // Botones sociales (placeholder)
                 _socialButton(
                   icon: FontAwesomeIcons.google,
                   label: 'Sign in with Google',
@@ -306,7 +302,6 @@ class _ChallengefigmaScreenState extends State<ChallengefigmaScreen> {
             ),
           ),
 
-          // Overlay de validación
           if (isValidating)
             IgnorePointer(
               ignoring: true,

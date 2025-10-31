@@ -89,7 +89,6 @@ class FoodDatabase {
       )
     ''');
 
-    // Seed mínimo para que tus pantallas muestren datos al abrir
     await db.insert('tblProduct', {
       'name': 'Kota Clásica',
       'price': 6200,
@@ -111,7 +110,6 @@ class FoodDatabase {
     await db.insert('tblDrink', {'name': 'Sprite', 'size': '330ml', 'price': 1800});
   }
 
-  /* ======= Helpers genéricos: INSERT/UPDATE/DELETE ======= */
   Future<int> INSERT(String table, Map<String, dynamic> data) async {
     final con = await database;
     return con!.insert(table, data);
@@ -127,14 +125,11 @@ class FoodDatabase {
     return con!.delete(table, where: '$keyColumn = ?', whereArgs: [id]);
   }
 
-  /* =============== SELECTs para tus pantallas =============== */
 
-  // Catálogos
   Future<List<ProductDao>> selectProducts() async {
     final con = await database;
     final res = await con!.query('tblProduct', orderBy: 'idProduct');
     return res.map((m) => ProductDao.fromMap(m)).toList();
-    // ejemplo UI: usa esto para el carrusel/cards de productos
   }
 
   Future<List<SauceDao>> selectSauces() async {
@@ -162,7 +157,6 @@ class FoodDatabase {
     int? idSauce,
     int? idDrink,
   }) async {
-    // Calcula el total de la línea (producto + extra salsa + bebida) * qty
     final con = await database;
 
     final p = (await con!.query('tblProduct',
@@ -194,7 +188,6 @@ class FoodDatabase {
   Future<int> cartUpdateQty(int idCartItem, int newQty) async {
     final con = await database;
 
-    // Recalcular total usando los ids guardados en la fila
     final row = (await con!.query('tblCartItem', where: 'idCartItem=?', whereArgs: [idCartItem])).first;
     final idProduct = row['idProduct'] as int;
     final idSauce = row['idSauce'] as int?;
@@ -231,7 +224,6 @@ class FoodDatabase {
     return con!.delete('tblCartItem');
   }
 
-  // Crear pedido a partir del carrito (para botón "Order / Checkout")
   Future<int> createOrderFromCart() async {
     final con = await database;
     return await con!.transaction<int>((txn) async {
@@ -261,7 +253,6 @@ class FoodDatabase {
     });
   }
 
-  // Historial de pedidos (para “Orders”)
   Future<List<OrderDao>> selectOrders() async {
     final con = await database;
     final res = await con!.query('tblOrder', orderBy: 'idOrder DESC');

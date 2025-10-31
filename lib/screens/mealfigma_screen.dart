@@ -219,7 +219,6 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      // Carrito con badge
                       Stack(
                         clipBehavior: Clip.none,
                         children: [
@@ -490,7 +489,6 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
 
                     const SizedBox(height: 8),
 
-                    // Botones: Checkout + Cantidad
                     Row(
                       children: [
                         Expanded(
@@ -574,7 +572,6 @@ class _MealfigmaScreenState extends State<MealfigmaScreen> {
   }
 }
 
-// ===== Widgets auxiliares =====
 
 class _SectionHeader extends StatelessWidget {
   final String title;
